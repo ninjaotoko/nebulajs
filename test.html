@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+<head>
+<script type="text/javascript" src="nebulajs.js"></script>
+</head>
+<body>
+
+</body>
+
+<script type="text/javascript">
+var wh = NebulaJS.watchHash({debug:true});
+
+function home(){ console.log('estas en Home') };
+
+wh.action({ 
+        'home': home,
+        'contacto': function(){ 
+            console.log('estas en contacto, y te vas a gracias en 5'); 
+            setTimeout(function(){ window.location.href="test.html#!/contacto/gracias" }, 5000) 
+        },
+        'contacto/gracias': function(){ 
+            console.log('Gracias :)');
+            setTimeout(function(){ window.location.href="test.html#!/" }, 5000) 
+        },
+        '^user/id/(\\d+)/$': function(action, user_id){ console.log('User ID:', user_id) }
+});
+
+wh.action(function(){ console.log("esta se ejecuta siempre") });
+wh.start();
+</script>
+</html>
