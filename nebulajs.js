@@ -22,17 +22,11 @@
     var queuelist = {};
     var utils = {
         toType : function(obj){ return ({}).toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase() }
-
         , range : function(max){ r=[]; for(var n=0; n<=max; n++) r.push(n); return r }
-
         , keys : function(obj){ return Object.keys(obj) }
-
         , trim : function(str){ return str.replace(/^\s+|\s+$/g, '') }
-
         , extend : function(from, ele){ var k,ele = ele || this; for(k in from) ele[k] = from[k]; return ele }
-
         , args : function(args) { return Array.prototype.slice.call(args, 1) }
-
         , filterRegExp : function(obj, patt){ 
             var matches={},m,k,ok=utils.keys(obj);
             for(k in ok){ 
@@ -121,8 +115,7 @@
         }
     }
 
-    var Queue = (function(){
-    
+    var Queue = (function(){ 
         var setQueue = function(names, fn, queue){
             names = njs.utils.toType(names) !== 'array' ? [names] : names;
             queue = njs.utils.toType(queue) == 'object' ? queue : Queue.queuelist;
@@ -136,14 +129,12 @@
             }
             return queue[name];
         }
-
         , getQueue = function(name, queue){ 
             queue = njs.utils.toType(queue) == 'object' ? queue : njs.utils.toType(name) == 'object' ? name : Queue.queuelist;
             name = njs.utils.toType(name) == 'string' ? name : null;
             if(name) return queue[name]; 
             return queue
         }
-
         , callQueue = function(names, args, queue){
             queue = njs.utils.toType(queue) == 'object' ? queue : njs.utils.toType(args) == 'object' ? args : Queue.queuelist;
             names = njs.utils.toType(names) !== 'array' ? [names] : names;
@@ -165,111 +156,78 @@
 
     })();
 
+    ////////////////////////////////////////////////////////////////////////////////
+    // UI
+    ////////////////////////////////////////////////////////////////////////////////
+    var ui = (function(){
+        var sorter = function(a,b){
+            if(a.toLowerCase() < b.toLowerCase()) return -1;
+            if(a.toLowerCase() > b.toLowerCase()) return 1;
+            return 0;
+        }
+        , resolveAttr = function(attr){
+            var args=[],k;
+            for(k in attr){
+                args.push( k + "=\"" + (njs.utils.toType(attr[k]) == "object" ? resolveAttr(attr[k]) : attr[k]) + "\"");
+            }
+            return args.join(" ")
+        }
+        , createTag = function(tag, value, attr){
+            // tag = strong
+            // attr = class, id, etc
+            // value = Esto es STRONG
+            // result = <strong (args...)>value</strong>
+
+            attr = njs.utils.toType(value) == "object" ? value : attr;
+            attr = resolveAttr(attr);
+
+            value = njs.utils.toType(value) == "object" ? "" : value || "";
+
+            if(!tag&&!attr) throw "createTag necesita de al menos 2 argumentos";
+            var norequired_end = /^img|hr|br|link$/i
+            , stag = njs.utils.trim(tag)
+            , st = "<"
+            , st_end = norequired_end.test(stag) ? "" : ">"
+            , et = norequired_end.test(stag) ? "" : "</"
+            , et_end = norequired_end.test(stag) ? "/>" : ">"
+            , dt = attr ? " " : ""
+            , etag = norequired_end.test(stag) ? "" : stag;
+
+            val = norequired_end.test(stag) ? "" : value;
+
+            return [st,stag,dt,attr,st_end,val,et,etag,et_end];
+
+        }
+        , list = function(obj, type, sort, reverse){
+            type = type || "li";
+            sort = sort || false;
+            reverse = reverse || false;
+
+            obj = (njs.utils.toType(obj) == "array") ? obj : (njs.utils.toType(obj) == "object") ? njs.utils.keys(obj) : [];
+            obj = sort ? obj.sort(sorter) : obj;
+            obj = reverse ? obj.reverse() : obj;
+
+            var i,t="";
+            for(i=0; i<obj.length; i++){
+                t+=createTag(type, obj[i]).join("");
+            }
+            return t;
+        }
+
+        return {
+            createTag:createTag
+            , list: list 
+            , olist: function(obj, sort, reverse){ return list(obj, "li", sort, reverse) }
+        }
+    }());
 
     this.utils = utils;
     this.watchHash = watchHash;
     this.Queue = Queue;
+    this.ui = ui;
 
     }).apply(NebulaJS);
     
     window.NJS = window.NebulaJS = window.njs = window.nebulajs = NebulaJS;
 
 })(window);
-
-
-
-////////////////////////////////////////////////////////////////////////////////
-// VER ESTO!!!
-////////////////////////////////////////////////////////////////////////////////
-
-var mediator = (function(){
-    var subscribe = function(channel, fn){
-        if (!mediator.channels[channel]) mediator.channels[channel] = [];
-        mediator.channels[channel].push({ context: this, callback: fn });
-        return this;
-    },
- 
-    publish = function(channel){
-        if (!mediator.channels[channel]) return false;
-        var args = Array.prototype.slice.call(arguments, 1);
-        for (var i = 0, l = mediator.channels[channel].length; i < l; i++) {
-            var subscription = mediator.channels[channel][i];
-            subscription.callback.apply(subscription.context, args);
-        }
-        return this;
-    };
- 
-    return {
-        channels: {},
-        publish: publish,
-        subscribe: subscribe,
-        installTo: function(obj){
-            obj.subscribe = subscribe;
-            obj.publish = publish;
-        }
-    };
- 
-}());
-
-
-var ui = (function(){
-    var sorter = function(a,b){
-        if(a.toLowerCase() < b.toLowerCase()) return -1;
-        if(a.toLowerCase() > b.toLowerCase()) return 1;
-        return 0;
-    }
-    , resolveAttr = function(attr){
-        var args=[],k;
-        for(k in attr){
-            args.push( k + "=\"" + (njs.utils.toType(attr[k]) == "object" ? resolveAttr(attr[k]) : attr[k]) + "\"");
-        }
-        return args.join(" ")
-    }
-    , createTag = function(tag, value, attr){
-        // tag = strong
-        // attr = class, id, etc
-        // value = Esto es STRONG
-        // result = <strong (args...)>value</strong>
-
-        attr = njs.utils.toType(value) == "object" ? value : attr;
-        attr = resolveAttr(attr);
-
-        value = njs.utils.toType(value) == "object" ? "" : value || "";
-
-        if(!tag&&!attr) throw "createTag necesita de al menos 2 argumentos";
-        var norequired_end = /^img|hr|br|link$/i
-        , stag = njs.utils.trim(tag)
-        , st = "<"
-        , st_end = norequired_end.test(stag) ? "" : ">"
-        , et = norequired_end.test(stag) ? "" : "</"
-        , et_end = norequired_end.test(stag) ? "/>" : ">"
-        , dt = attr ? " " : ""
-        , etag = norequired_end.test(stag) ? "" : stag;
-
-        val = norequired_end.test(stag) ? "" : value;
-
-        return [st,stag,dt,attr,st_end,val,et,etag,et_end];
-
-    }
-    , list = function(obj, type, sort, reverse){
-        type = type || "li";
-        sort = sort || false;
-        reverse = reverse || false;
-
-        obj = (njs.utils.toType(obj) == "array") ? obj : (njs.utils.toType(obj) == "object") ? njs.utils.keys(obj) : [];
-        obj = sort ? obj.sort(sorter) : obj;
-        obj = reverse ? obj.reverse() : obj;
-
-        var i,t="";
-        for(i=0; i<obj.length; i++){
-            t+=createTag(type, obj[i]).join("");
-        }
-        return t;
-    }
-
-    return {
-        createTag:createTag
-        , list: list 
-        , olist: function(obj, sort, reverse){ return list(obj, "li", sort, reverse) }
-    }
-}());
