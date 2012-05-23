@@ -360,6 +360,123 @@ var Notify = (function() {
 }());
 
 ////////////////////////////////////////////////////////////////////////////////
+// jQuery - Protección automatica para formularios via ajax
+////////////////////////////////////////////////////////////////////////////////
+(function($){
+    $(document).ajaxSend(function(event, xhr, settings) {
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie != '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        function sameOrigin(url) {
+            // url could be relative or scheme relative or absolute
+            var host = document.location.host; // host + port
+            var protocol = document.location.protocol;
+            var sr_origin = '//' + host;
+            var origin = protocol + sr_origin;
+            // Allow absolute or scheme relative URLs to same origin
+            return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+                (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+                // or any other URL that isn't scheme relative or absolute i.e relative.
+                !(/^(\/\/|http:|https:).*/.test(url));
+        }
+        function safeMethod(method) {
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+
+        if (!safeMethod(settings.type) && sameOrigin(settings.url)) {
+            xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+        }
+    });
+})(window.jQuery);
+
+
+////////////////////////////////////////////////////////////////////////////////
+// jQuery - clase para form-ajax 
+////////////////////////////////////////////////////////////////////////////////
+(function($){
+
+$.fn.ajaxsubmit = function(options, callback) {
+    
+    var callback = typeof callback == 'function' ? callback : typeof options == 'function' ? options : function() {}
+    , settings = {
+        namespace: 'ajax-submit',
+        notify: false,
+        cleanOnSuccess: true, // limpia el form luego de retornar con exito
+        debug: true
+    }
+    , elements = this;
+
+    if (typeof options != 'function') {  $.extend(settings, options) }
+
+    function clean(element) {
+        // limpia el form
+        $("textarea, input[type=text]", element).val('');
+        $("option:selected, input[type=radio]", element).removeAttr("selected");
+        $("input[type=checkbox]:selected", element).removeAttr("checked");
+    };
+
+    // recorre los elementos
+    this.on("submit."+settings.namespace, function(event) {
+
+        event.preventDefault();
+
+        // simple cache
+        var element = $(this)
+        , data = element.serialize() 
+        , action = element.attr('action')
+        , promise = $.post(action, data)
+        , start_send = Date.now(), info;
+
+
+        // avisa que esta mandando el form
+        if (settings.notify) {
+           info = Notify.info("Enviando los datos", "puede tardar un momento :)", 30*1000);
+        }
+
+        promise.always(function(data, msg, request) {
+            if (settings.notify) { 
+                try { info.clear() } catch ( E ) {}
+                $.when(evaluate_request(request)).then(function () { 
+                    callback.apply(element, Array.prototype.slice.call([data,msg,request]));
+                    if (settings.cleanOnSuccess) { clean() }
+                });
+            } 
+        });
+
+        if (!settings.notify) { 
+            try { info.clear() } catch ( E ) {}
+            $.when(promise).then(function (data, msg, request) { 
+                callback.apply(element, Array.prototype.slice.call([data,msg,request]))
+            });
+        }
+
+        if (settings.debug) {
+            /* log */ console.log('start send', start_send);
+            /* log */ console.log('send complete', Date.now());
+        }
+    });
+
+    return {
+        clean: function () { clean(this.element) }
+    }
+}
+
+})(window.jQuery);
+
+
+////////////////////////////////////////////////////////////////////////////////
 // xUI, temaplates simples pero poderosos
 //
 // como usar:
