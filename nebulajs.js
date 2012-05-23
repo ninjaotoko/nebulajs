@@ -23,6 +23,11 @@
     , document = window.document
     , navigator = window.navigator
     , location = window.location;
+
+    // Carga underscore si no existe
+    if ( !window._ ) {
+        asyncload( 'http://underscorejs.org/underscore-min.js' );
+    }
     
     (function () {
         var queuelist = {};
@@ -58,9 +63,16 @@
         // Controlador de URLs y vistas, es la C de MVC
         // como usar:
         //
-        // var control = $n.watchHash({
-        //      'url': callback
-        // })
+        // var control = $n.watchHash(/* config */)
+        //
+        // control.action({
+        //      'url': callback,
+        //      '^url_regexp/(\d+)/': callback 
+        //          // devuelve el callback pasando como args los valores capturados
+        //      })
+        //
+        // control.start() // inicia el controlador
+        // 
         //
         ////////////////////////////////////////////////////////////////////////////////
         , watchHash = function ( settings, callback ) {
