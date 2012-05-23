@@ -409,7 +409,7 @@ var xUI = (function(){
             'length': function ( obj ) { 
                 if ( obj != undefined ) { return obj.length } else { return 0 } 
             },
-            'truncateWords': function ( str, len ) { return str.split(/\s/).slice(0, len).join(' ') }
+            'truncateWords': function ( str, len ) { return ("" + str).split(/\s/).slice(0, len).join(' ') }
         }
     }())
     // escape
