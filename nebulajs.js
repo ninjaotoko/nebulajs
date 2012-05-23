@@ -12,7 +12,7 @@
 //
 // Notas:
 // Requiere de jQuery y Underscore para usar todas las funciones, en caso de que
-// no esten cargadas estas librerias las intenta cargar automaticamente con 
+// no estén cargadas éstas librerías las intenta cargar automáticamente con 
 // asyncload desde CDN.
 // 
 ////////////////////////////////////////////////////////////////////////////////
@@ -72,14 +72,14 @@
             // corrige las RegExp
             function regexp_sanitize( regex ) {
                 regex = utils.trim( regex );
-                regex = config.endslash && !/\/?\$?$/.test( regex ) ? regex+"/" : regex;
+                regex = config.endslash && !/\/?\$?$/.test( regex ) ? regex + "/" : regex;
                 return regex
             }
             // wrapper para el callback
             function wp_callback( hash, action ) {
                 return callback( hash, action )
             }
-            // wrapper para action
+            // wrapper para las acciones
             function wp_action( fn ) {
                 var k;
                 if ( utils.isObject( fn ) && utils.toType( fn ) !== 'function' ) {
@@ -126,7 +126,7 @@
                     return wp_callback( hash, action );
 
                 } else if ( hash.length && current !== hash && !def ) {
-                    // ejecula la cola de fn para este action, y el global
+                    // ejecula la cola de fn para ésta acción y luego la global
                     call_queue( ["default", "home"], hash, action )
                     def = true;
 
@@ -185,8 +185,6 @@
                 if ( !$n.utils.isArray( names ) ) { names = [ names ] }
                 if ( !$n.utils.isObject( queue ) ) { 
                     queue = Queue.queuelist
-                    //if ( !$n.utils.isObject( args ) ) { queue = Queue.queuelist }
-                    //else { queue = args }
                 }
                 for ( name = 0; name <= names.length - 1; name++ ) {
                     for ( q in queue[names[name]] ) { queue[names[name]][q].apply( this, args ) }
