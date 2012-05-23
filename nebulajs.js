@@ -396,10 +396,10 @@ var xUI = (function(){
     , filters = (function(){
         return {
             'default': function(a,b){ return !a ? b : a },
-            'upper': function(a){ return a.toUpperCase() },
-            'lower': function(a){ return a.toLowerCase() },
+            'upper': function(a){ return ("" + a).toUpperCase() },
+            'lower': function(a){ return ("" + a).toLowerCase() },
             'title': function(a){ 
-                var s = a.split(/\s/); 
+                var s = ("" + a).split(/\s/); 
                 for(var i=0; i<s.length; i++){ 
                     s[i] = s[i][0].toUpperCase() + s[i].slice(1);
                 }
