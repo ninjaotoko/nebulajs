@@ -1,28 +1,64 @@
 <!doctype html>
 <html>
 <head>
+<script src="http://code.jquery.com/jquery.min.js"></script><!-- latest ever -->
 <script type="text/javascript" src="nebulajs.js"></script>
+<style> 
+    div { height:450px }
+</style>
 </head>
 <body>
+    <div id="home">
+        <h1>Home / default</h1>
+        <a href="#!/contacto/">ir Contacto!</a>
+        <p>Numquam quidem tempora sed sunt ab eius exercitationem nihil soluta consectetur repellendus, blanditiis aliquam fugit, possimus impedit adipisci fugit laborum dolorum perferendis hic quae. Dolor laborum maxime minus ipsum eligendi deleniti totam illo harum quidem, laborum pariatur exercitationem corporis sit sapiente? Autem nobis itaque deleniti sunt doloribus illum nulla sed exercitationem natus, iure debitis nostrum at itaque maxime consequuntur sunt, nihil adipisci deserunt architecto vitae quisquam? Eligendi debitis aliquam rerum molestiae sunt consectetur labore doloremque molestias qui, in facilis molestiae possimus, nam voluptas sequi facilis, corporis veritatis aliquid enim alias rem optio quaerat eos neque corrupti blanditiis.</p>
+    </div>
+
+    <div id="contacto">
+        <h1>Contacto</h1>
+        <a href="#!/">ir a la home!</a>
+        <p>Numquam quidem tempora sed sunt ab eius exercitationem nihil soluta consectetur repellendus, blanditiis aliquam fugit, possimus impedit adipisci fugit laborum dolorum perferendis hic quae. Dolor laborum maxime minus ipsum eligendi deleniti totam illo harum quidem, laborum pariatur exercitationem corporis sit sapiente? Autem nobis itaque deleniti sunt doloribus illum nulla sed exercitationem natus, iure debitis nostrum at itaque maxime consequuntur sunt, nihil adipisci deserunt architecto vitae quisquam? Eligendi debitis aliquam rerum molestiae sunt consectetur labore doloremque molestias qui, in facilis molestiae possimus, nam voluptas sequi facilis, corporis veritatis aliquid enim alias rem optio quaerat eos neque corrupti blanditiis.</p>
+    </div>
+
+    <div id="fin">
+        <h1>Fin</h1>
+        <a href="#!/">ir a la home!</a>
+        <a href="#!/user/id/3/">ver el user ID 3!</a>
+        <p>Numquam quidem tempora sed sunt ab eius exercitationem nihil soluta consectetur repellendus, blanditiis aliquam fugit, possimus impedit adipisci fugit laborum dolorum perferendis hic quae. Dolor laborum maxime minus ipsum eligendi deleniti totam illo harum quidem, laborum pariatur exercitationem corporis sit sapiente? Autem nobis itaque deleniti sunt doloribus illum nulla sed exercitationem natus, iure debitis nostrum at itaque maxime consequuntur sunt, nihil adipisci deserunt architecto vitae quisquam? Eligendi debitis aliquam rerum molestiae sunt consectetur labore doloremque molestias qui, in facilis molestiae possimus, nam voluptas sequi facilis, corporis veritatis aliquid enim alias rem optio quaerat eos neque corrupti blanditiis.</p>
+    </div>
+
+    <div id="user">
+        <h1>Este el es User ID: <span></span></h1>
+        <p>Esto funca!!!!!!!</p>
+        <a href="#!/">ir a la home!</a>
+    </div>
 
 </body>
 
 <script type="text/javascript">
-var wh = NebulaJS.watchHash({debug:true});
+var wh = $n.watchHash({debug:true}), steps;
 
-function home(){ console.log('estas en Home') };
+function home(){ console.log('estas en Home');
+    $('html,body').animate({'scrollTop': $("#home").offset().top });
+};
 
 wh.action({ 
         'home': home,
-        'contacto': function(){ 
+        '^contacto/$': function(){
+            $('html,body').animate({'scrollTop': $("#contacto").offset().top });
             console.log('estas en contacto, y te vas a gracias en 5'); 
-            setTimeout(function(){ window.location.href="test.html#!/contacto/gracias" }, 5000) 
+            steps = setTimeout(function(){ window.location.href="#!/contacto/gracias/" }, 5000) 
         },
-        'contacto/gracias': function(){ 
+        '^contacto/gracias/$': function(){ 
+            $('html,body').animate({'scrollTop': $("#fin").offset().top });
             console.log('Gracias :)');
-            setTimeout(function(){ window.location.href="test.html#!/" }, 5000) 
         },
-        '^user/id/(\\d+)/$': function(action, user_id){ console.log('User ID:', user_id) }
+        '^user/id/(\\d+)/?$': function(action, user_id){ 
+            $("#user span").text( user_id );
+            $('html,body').animate({'scrollTop': $("#user").offset().top });
+
+            console.log('User ID:', user_id);
+        }
 });
 
 wh.action(function(){ console.log("esta se ejecuta siempre") });

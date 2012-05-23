@@ -1,35 +1,42 @@
-/*
- * Nebula JS
- *
- * Primer implementación limpia y seria de nebulajs
- * Copyright 2012, Xavier Lesa
- *
- * Xavier Lesa <xavierlesa@gmail.com>
- *
- * Sun Apr 29 18:39:26 ART 2012
- * 
- */
-
+////////////////////////////////////////////////////////////////////////////////
+//
+// Nebula JS
+// 
+// Primer implementación limpia y seria de nebulajs
+// Copyright 2012, Xavier Lesa
+// 
+// Xavier Lesa <xavierlesa@gmail.com>
+// 
+// Sun Apr 29 18:39:26 ART 2012
+//
+//
+// Notas:
+// Requiere de jQuery y Underscore para usar todas las funciones, en caso de que
+// no esten cargadas estas librerias las intenta cargar automaticamente con 
+// asyncload desde CDN.
+// 
+////////////////////////////////////////////////////////////////////////////////
 (function ( window, undefined ) {
 
+    // Setea el objeto NebulaJS para que nadie mas lo use :)
     var NebulaJS = {}
     , document = window.document
     , navigator = window.navigator
     , location = window.location;
-
     
     (function () {
         var queuelist = {};
 
-        // Utilidades
+        // Utilidades (Obsoleto, esto va a ser reemplazado por underscore)
         var utils = {
             toType : function ( object ) { 
                 return ({}).toString.call( object ).match( /\s([a-zA-Z]+)/ )[1].toLowerCase()
             }
-            , range : function ( max ) {
-                var r = [], n;
-                for ( n = 0; n <= max; n++ ) r.push( n );
-                return r
+            , isArray : function ( object ) {
+                return Array.isArray( object )
+            }
+            , isObject : function ( object ) {
+                return object === Object( object ) && !Array.isArray( object )
             }
             , keys : function ( object ) {
                 return Object.keys( object ) 
@@ -44,21 +51,12 @@
             }
             , args : function ( args ) {
                 return Array.prototype.slice.call( args, 1 )
-            }
-            , filterRegExp : function ( object, patt ) {
-                var matches = {}, m, k, ok = utils.keys( object );
-                for ( k in ok ) {
-                    if ( m = patt.exec( ok[ k ] ) ) {
-                        matches[ ok[ k ] ] = { args : m.slice( 1 ), fn : object[ok[k]] }
-                    }
-                }
-                return matches
-            }
+            } 
         }
         // Controlador de URLs y vistas
         , watchHash = function ( settings, callback ) {
             var callback = utils.toType( callback ) == "function" ? callback : utils.toType( settings ) == "function" ? settings : function () {}
-            , config = utils.extend( utils.toType( settings ) == "object" ? settings : {}, {
+            , config = utils.extend( utils.isObject( settings ) ? settings : {}, {
                 interval: 100,
                 hashstring: "#!/",
                 endslash: true,
@@ -83,8 +81,11 @@
             }
             // wrapper para action
             function wp_action( fn ) {
-                if ( utils.toType( fn ) !== "function" ) {
-                    for ( var k in fn ) Queue.setQueue( regexp_sanitize( k ), fn[k], queue )
+                var k;
+                if ( utils.isObject( fn ) && utils.toType( fn ) !== 'function' ) {
+                    for ( k in fn ) { 
+                        Queue.setQueue( regexp_sanitize( k ), fn[k], queue )
+                    }
                 }
                 else {
                     Queue.setQueue( "default", fn, queue )
@@ -93,22 +94,23 @@
             // llama a la cola de fn
             function call_queue( actions, hash, action ) {
                 var k,i,m;
-                if ( utils.toType( actions ) !== "array" ) actions = [actions];
+                if ( !utils.isArray( actions ) ) { actions = [ actions ] }
                 for ( k in Queue.getQueue( queue ) ) {
                     for ( i = 0; i < actions.length; i++ ) {
-                        if ( m = ( new RegExp( k ) ).exec( actions[i] ) ) {
-                            m.slice( 1 ).unshift(  actions[i] )
+                        if ( m = ( new RegExp( k ) ).exec( actions[ i ] ) ) {
+                            m.slice( 1 ).unshift(  actions[ i ] );
                             Queue.callQueue( k, m, queue )
                         }
                     }
                 }
+                /* log */ console.log( queue )
             }
             // watcher
-            function wh( ) {
+            function wh() {
                 // aplica el nuevo hash
                 // resetea la URL y agrega el hash
                 hash = window.location.hash;
-                window.location.hash = !hash ? config.hashstring : window.location.hash;
+                if ( !hash ) { window.location.hash = config.hashstring }
 
                 // es un nuevo hash o sea el hash cambió
                 if ( hash.length && hash.split( config.hashstring )[1] && current !== hash ) {
@@ -117,7 +119,7 @@
                     action = hash.split( config.hashstring )[1]; 
                     current = hash; // guarda el hash actual
                     // ejecula la cola de fn para este action, y la global
-                    call_queue( [action, "default"], hash, action )
+                    call_queue( ["default", action], hash, action )
                     def = false;
 
                     // llama al callback
@@ -125,7 +127,7 @@
 
                 } else if ( hash.length && current !== hash && !def ) {
                     // ejecula la cola de fn para este action, y el global
-                    call_queue( ["home", "default"], hash, action )
+                    call_queue( ["default", "home"], hash, action )
                     def = true;
 
                     // llama al callback
@@ -134,7 +136,8 @@
             } 
             return {
                 action : function ( fn ) {
-                    wp_action( fn ); return this 
+                    wp_action( fn );
+                    return this 
                 }
                 , start : function () {
                     i = setInterval( wh, config.interval );
@@ -155,24 +158,38 @@
         // Queue para aplicar fn en cola
         var Queue = (function () { 
             var setQueue = function ( names, fn, queue ) {
-                names = njs.utils.toType( names ) !== "array" ? [names] : names;
-                queue = njs.utils.toType( queue ) == "object" ? queue : Queue.queuelist;
-                for ( var name=0; name<=names.length-1; name++ ) {
-                    queue[names[name]] = queue[names[name]] ? queue[names[name]] : {};
-                    if ( njs.utils.toType( fn ) !== "undefined" ) queue[names[name]][fn.name || ( Math.random() ).toString().replace( "0.", names[name]+"-fn-" )] = fn;
+                if ( !$n.utils.isArray( names ) ) { names = [ names ] }
+                if ( !$n.utils.isObject( queue ) ) { queue = Queue.queuelist }
+                for ( var name = 0; name <= names.length - 1; name++ ) {
+                    if ( !queue[names[name]] ) { queue[names[name]] = {} }
+                    if ( $n.utils.toType( fn ) == 'function' ) {
+                        queue[names[name]][fn.name || ( Math.random() ).toString().replace( "0.", names[name]+"-fn-" )] = fn;
+                    }
                 }
                 return queue[name];
             }
             , getQueue = function ( name, queue ) {
-                queue = njs.utils.toType( queue ) == "object" ? queue : njs.utils.toType( name ) == "object" ? name : Queue.queuelist;
-                name = njs.utils.toType( name ) == "string" ? name : null;
-                return name ? queue[name] : queue;
+                // resuelve si hay queue activa.
+                if ( !$n.utils.isObject( queue ) ) {
+                    if ( !$n.utils.isObject( name ) ) { queue = Queue.queuelist }
+                    else { queue = name }
+                }
+                if ( !$n.utils.isArray( name ) && $n.utils.toType( name ) == 'srting') {
+                    return queue[ name ]
+                }
+
+                return queue;
             }
             , callQueue = function ( names, args, queue ) {
-                queue = njs.utils.toType( queue ) == "object" ? queue : njs.utils.toType( args ) == "object" ? args : Queue.queuelist;
-                names = njs.utils.toType( names ) !== "array" ? [names] : names;
-                for ( var name=0; name<=names.length-1; name++ ) {
-                    for ( var q in queue[names[name]] ) { queue[names[name]][q].apply( this, args ) }
+                var name, q;
+                if ( !$n.utils.isArray( names ) ) { names = [ names ] }
+                if ( !$n.utils.isObject( queue ) ) { 
+                    queue = Queue.queuelist
+                    //if ( !$n.utils.isObject( args ) ) { queue = Queue.queuelist }
+                    //else { queue = args }
+                }
+                for ( name = 0; name <= names.length - 1; name++ ) {
+                    for ( q in queue[names[name]] ) { queue[names[name]][q].apply( this, args ) }
                 }
             };
             return {
@@ -193,7 +210,7 @@
             , resolveAttr = function ( attr ) {
                 var args=[],k;
                 for ( k in attr ) {
-                    args.push( k + "=\"" + ( njs.utils.toType( attr[k] ) == "object" ? resolveAttr( attr[k] ) : attr[k] ) + "\"" );
+                    args.push( k + "=\"" + ( $n.utils.toType( attr[k] ) == "object" ? resolveAttr( attr[k] ) : attr[k] ) + "\"" );
                 }
                 return args.join( " " )
             }
@@ -203,14 +220,14 @@
                 // value = Esto es STRONG
                 // result = <strong (args...)>value</strong>
 
-                attr = njs.utils.toType( value ) == "object" ? value : attr;
+                attr = $n.utils.toType( value ) == "object" ? value : attr;
                 attr = resolveAttr( attr );
 
-                value = njs.utils.toType( value ) == "object" ? "" : value || "";
+                value = $n.utils.toType( value ) == "object" ? "" : value || "";
 
                 if ( !tag&&!attr ) throw "createTag necesita de al menos 2 argumentos";
                 var norequired_end = /^img|hr|br|link$/i
-                , stag = njs.utils.trim( tag )
+                , stag = $n.utils.trim( tag )
                 , st = "<"
                 , st_end = norequired_end.test( stag ) ? "" : ">"
                 , et = norequired_end.test( stag ) ? "" : "</"
@@ -228,7 +245,7 @@
                 sort = sort || false;
                 reverse = reverse || false;
 
-                object = ( njs.utils.toType( object ) == "array" ) ? object : ( njs.utils.toType( object ) == "object" ) ? njs.utils.keys( object ) : [];
+                object = ( $n.utils.toType( object ) == "array" ) ? object : ( $n.utils.toType( object ) == "object" ) ? $n.utils.keys( object ) : [];
                 object = sort ? object.sort( sorter ) : object;
                 object = reverse ? object.reverse(  ) : object;
 
@@ -253,21 +270,239 @@
 
     }).apply( NebulaJS );
     
-    window.NJS = window.NebulaJS = window.njs = window.nebulajs = NebulaJS;
+    window.$n = window.NebulaJS = NebulaJS;
 
 })( window );
 
 
-var loadInBulk = function ( url_scripts ) {
-    var i, s, t = document.getElementsByTagName('script')[0], 
-        ce = function(e){ return document.createElement(e) };
-        url_scripts = ( njs.utils.toType( url_scripts ) == "array" ) ? url_scripts : [ url_scripts ];
 
+////////////////////////////////////////////////////////////////////////////////
+// Utilidades
+////////////////////////////////////////////////////////////////////////////////
+var asyncload = function ( url_scripts ) {
+    var i = 0, s, t = document.getElementsByTagName( 'script' )[0];
+    if( !$n.utils.isArray( url_scripts ) ) { url_scripts = [ url_scripts ] }
     for ( i = 0; i < url_scripts.length; i++ ) {
-        s=ce('script'); 
+        s = document.createElement( 'script' );
         s.src = url_scripts[i];
         s.type = "text/javascript";
         s.async = true;
-        t.parentNode.insertBefore(s, t);
+        t.parentNode.insertBefore( s, t );
     }
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// Utils pata Notify
+////////////////////////////////////////////////////////////////////////////////
+function evaluate_request(request) {
+
+    if (request.status == 500) { // error 500
+        Notify.error('Error ;(', 'Algo ha fallado, intenta nuevamente!', 3500);
+    }
+    if (request.status == 404) { // error 404
+        Notify.warning('Cuidado :(', 'Al parecer eso no hace nada ¿?', 3500);
+    }
+    if (request.status == 304) { // info 304
+        Notify.info('Cargando :)', 'cargando bytes...', 3500);
+        return true;
+    }
+    if (request.status == 200) { // 200 ok
+
+        // evalua data para encontrar 'error'
+        request.done(function(data) {
+            var e,typ,ti,co;
+            if (data['error'] || (data.length > 1 && data[0]['error'])) {
+                e = data['error'] || data[0]['error'];
+                //fail o error ?
+                if (e['fail_type']) {
+                    typ = e['fail_type']; ti = e['fail_msg']; co = '';
+                } 
+                else if (e['error_msg'] || e['msg'] || e['error']) {
+                    typ = 'error'; ti = e['error_msg'] || e['msg'] || e['error']; co = '';
+
+                } else if (e['content'] || e['title']) {
+                    typ = 'error'; ti = e['title'] || e['content']; co = e['content'] || '';
+                }
+
+                Notify.render(typ, ti, co, 5000);
+                return false;
+            }
+        });
+
+        return true;
+    }
+    
+    return false;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Notify
+////////////////////////////////////////////////////////////////////////////////
+var Notify = (function() {
+    var tpl = ['<div class="message ',,'"><h3>',,'</h3><p>',,'</p></div>'],
+    render = function(msgtype, title, message, timeout){
+        var timeout = timeout || (1000 * 30);
+        tpl[1] = msgtype, tpl[3] = title, tpl[5] = message;
+        var m = $(tpl.join(''));
+        m = $(m).css({position:'fixed', top:-100}).animate({top:0}).delay(timeout).animate({top:-100}, function(){ cleartime(m) });
+        $('body', top.document).append(m);
+        return m;
+    },
+
+    cleartime = function(m){ $(m).remove() };
+
+    return {
+        render: function(msgtype, title, msg, timeout){ this.m = render(msgtype, title, msg, timeout); return this },
+        error: function(title, msg, timeout){ this.m = render('error', title, msg, timeout); return this },
+        info: function(title, msg, timeout){ this.m = render('info', title, msg, timeout); return this },
+        warning: function(title, msg, timeout){ this.m = render('warning', title, msg, timeout); return this },
+        success: function(title, msg, timeout){ this.m = render('success', title, msg, timeout); return this },
+        clear: function(){ cleartime(this.m); }
+    }
+}());
+
+////////////////////////////////////////////////////////////////////////////////
+// xUI, temaplates simples pero poderosos
+//
+// como usar:
+//
+// var data = { user: { name: 'Pepe', age: null } };
+//
+// xUI.template("Mi nombre es ${ user.name }, y tengo ${ user.age|default:'varios' } años.")
+// xUI.render(data)
+//
+// // Mi nombre es Pepe, y tengo varios años.
+//
+////////////////////////////////////////////////////////////////////////////////
+var xUI = (function(){
+    var tpl
+    , vars = {}
+    , var_exp = new RegExp(/\$\{\s?([a-zA-Z0-9\_\-\.\|\:\'\"\s]+)\s?\}/g) // regexp para identificar una variable de template con filtros y demas
+    , filters = (function(){
+        return {
+            'default': function(a,b){ return !a ? b : a },
+            'upper': function(a){ return a.toUpperCase() },
+            'lower': function(a){ return a.toLowerCase() },
+            'title': function(a){ 
+                var s = a.split(/\s/); 
+                for(var i=0; i<s.length; i++){ 
+                    s[i] = s[i][0].toUpperCase() + s[i].slice(1);
+                }
+                return s.join(' ')
+            },
+            'toLocalDate': function ( str ) { return new Date(str).toLocaleDateString() },
+            'length': function ( obj ) { 
+                if ( obj != undefined ) { return obj.length } else { return 0 } 
+            },
+            'truncateWords': function ( str, len ) { return str.split(/\s/).slice(0, len).join(' ') }
+        }
+    }())
+    // escape
+    , escape_slash = function(a){ return a.replace(/\|/g, '\\|').replace(/\:/g, '\\:') }
+
+    // setea o devuelve el template
+    , template = function(a){
+        if(a){ 
+            tpl = a;
+            return
+        }
+        return tpl
+    }
+    // crea el context de una variable pra luego parsear y devolver su valor
+    , context = function(a){
+        return new RegExp('\\$\{\\s\?'+a+'\\s\?\}', 'gi')
+    }
+    // render context. itera en la data y reemplaza en el template
+    , render = function ( data ) {
+        if ( toString.call(data) != '[object Array]' ) {
+            data = [data];
+        }
+        var n, result='';
+        for ( n = 0; n < data.length; n++ ) {
+
+            var i, var_ctx, ctx, _t = tpl;
+            // carga/actualiza las variables del tempalte
+            template_vars();
+
+            // itera entre los keys del JSON
+            for ( i in vars ) {
+                ctx = vars[i].get( data[n] );
+                var_ctx = context( vars[i].str );
+                /* log console.log( var_ctx, ctx ); */
+                _t = _t.replace( var_ctx, ctx);
+            }
+            result += _t;
+        }
+
+        return result
+    }
+    // obtener todas las vars del template
+    , template_vars = function () {
+        var match, object_var;
+
+        while( match = var_exp.exec( template() ) ) {
+            if ( !vars.hasOwnProperty( match[1] ) ) {
+                object_var = resolve_vars( match[1] )
+                /* log console.log(match[1], object_var); */
+                vars[ match[1] ] = object_var
+            } 
+            //else {
+            //   console.log('no se que hacer con esto?')
+            //}
+        }
+        return vars
+    }
+
+    , resolve_obj = function ( obj, strobj ) {
+        // Resuelve la recursividad de un objeto dentro de otro
+        // retorna el objeto final o undefuned si no existe
+        strobj = strobj.split(/\./);
+        for ( var i = 0; i < strobj.length; i++ ) {
+            if ( obj.hasOwnProperty( strobj[i] ) ) {
+                obj = obj[strobj[i]]
+            } else return undefined;
+        }
+        return obj
+    }
+
+    // resuelve una variable con filtros, argumentos, etc
+    , resolve_vars = function(a){
+        a = a.replace(/^\s+|\s+$/,'');
+        var parts = /([\w\.]+)(?:\|?(\w+))?(?:\:?(.*))/gi.exec( a ).slice(1)
+        obj = parts[0]
+        filter = parts[1]
+        args = parts[2]
+            return {
+                str: escape_slash(a),
+                obj: obj,
+                filter: filter,
+                args: args,
+                get: function ( obj ) { 
+                    // resuelve el contexto de la variable, desde el objeto a renderizar
+                    // obj es algo como , user -> user.elemento.elemento.elemento....
+
+                    obj = resolve_obj( obj, this.obj )
+
+                    /* log console.log( o ) */
+                    if ( this.filter && filters[ this.filter ] ) {
+                        if ( this.args ) {
+                            obj = filters[this.filter] ( obj, this.args )
+                        }
+                        else {
+                            obj = filters[this.filter] ( obj )
+                        }
+                    }
+
+                    return obj
+                }
+            }
+    }
+
+    return {
+        template: function(a){ return template(a) },
+        context: function(a){ return context(a) },
+        render: function(a){ return render(a) },
+        getVars: function(){ return template_vars() }
+    }
+
+})();
