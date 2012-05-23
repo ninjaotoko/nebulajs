@@ -23,11 +23,6 @@
     , document = window.document
     , navigator = window.navigator
     , location = window.location;
-
-    // Carga underscore si no existe
-    if ( !window._ ) {
-        asyncload( 'http://underscorejs.org/underscore-min.js' );
-    }
     
     (function () {
         var queuelist = {};
@@ -640,3 +635,8 @@ var xUI = (function(){
         }
     }
 })(window.jQuery);
+
+// Carga underscore si no existe
+if ( !window._ ) {
+    asyncload( 'http://underscorejs.org/underscore-min.js' );
+}
