@@ -408,8 +408,10 @@ var notify_request = (function(){
                     callback_fail(request);
                     return false;
                 }
+                else {
+                    callback_done(request);
+                }
             });
-            callback_done(request);
             return true;
         }
     },
