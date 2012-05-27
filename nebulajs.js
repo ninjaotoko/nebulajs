@@ -119,14 +119,16 @@
                         }
                     }
                 }
-                /* log */ console.log( queue )
+                /* log console.log( queue ) */
             }
             // watcher
             function wh() {
                 // aplica el nuevo hash
                 // resetea la URL y agrega el hash
                 hash = window.location.hash;
-                if ( !hash ) { window.location.hash = config.hashstring }
+                if ( !hash ) { 
+                    window.location.hash = config.hashstring
+                }
 
                 // es un nuevo hash o sea el hash cambió
                 if ( hash.length && hash.split( config.hashstring )[1] && current !== hash ) {
@@ -309,7 +311,6 @@ var asyncload = function ( url_scripts ) {
 // Utils pata Notify
 ////////////////////////////////////////////////////////////////////////////////
 function evaluate_request(request) {
-
     if (request.status == 500) { // error 500
         Notify.error('Error ;(', 'Algo ha fallado, intenta nuevamente!', 3500);
     }
@@ -392,7 +393,10 @@ var Notify = (function() {
 var xUI = (function(){
     var tpl
     , vars = {}
-    , var_exp = new RegExp(/\$\{\s?([a-zA-Z0-9\_\-\.\|\:\'\"\s]+)\s?\}/g) // regexp para identificar una variable de template con filtros y demas
+
+    // regexp para identificar una variable de template con filtros y demas
+    , var_exp = new RegExp(/\$\{\s?([a-zA-Z0-9\_\-\.\|\:\'\"\s]+)\s?\}/g)
+
     , filters = (function(){
         return {
             'default': function(a,b){ return !a ? b : a },
@@ -412,6 +416,7 @@ var xUI = (function(){
             'truncateWords': function ( str, len ) { return ("" + str).split(/\s/).slice(0, len).join(' ') }
         }
     }())
+
     // escape
     , escape_slash = function(a){ return a.replace(/\|/g, '\\|').replace(/\:/g, '\\:') }
 
@@ -419,14 +424,16 @@ var xUI = (function(){
     , template = function(a){
         if(a){ 
             tpl = a;
-            return
+            return xUI
         }
         return tpl
     }
+
     // crea el context de una variable pra luego parsear y devolver su valor
     , context = function(a){
         return new RegExp('\\$\{\\s\?'+a+'\\s\?\}', 'gi')
     }
+
     // render context. itera en la data y reemplaza en el template
     , render = function ( data ) {
         if ( toString.call(data) != '[object Array]' ) {
@@ -451,6 +458,7 @@ var xUI = (function(){
 
         return result
     }
+
     // obtener todas las vars del template
     , template_vars = function () {
         var match, object_var;
@@ -468,9 +476,8 @@ var xUI = (function(){
         return vars
     }
 
+    // Resuelve la recursividad de un objeto, retorna el objeto final o undefunid
     , resolve_obj = function ( obj, strobj ) {
-        // Resuelve la recursividad de un objeto dentro de otro
-        // retorna el objeto final o undefuned si no existe
         strobj = strobj.split(/\./);
         for ( var i = 0; i < strobj.length; i++ ) {
             if ( obj.hasOwnProperty( strobj[i] ) ) {
@@ -521,6 +528,97 @@ var xUI = (function(){
     }
 
 })();
+
+////////////////////////////////////////////////////////////////////////////////
+// Un paginador simple - requiere jQuery
+// paginate( list, [page], [paginate_by])
+// retorna el objeto del paginador
+////////////////////////////////////////////////////////////////////////////////
+function paginate( data, page, paginate_by ) {
+
+    var paginate_by = paginate_by || 10, 
+        pages = 1, 
+        last_page = 0, 
+        page = page || 1, 
+        prev = false, 
+        next = false,
+        from_item,
+        to_item,
+        p,
+        link = '', 
+        url = /^(.*)\/page=\d+\/?$/gi.exec(window.location.hash) || /^(.*)\/$/gi.exec(window.location.hash) || /^(.*)$/gi.exec(window.location.hash);
+    
+    // resuelve la cantidad de páginas
+    if ( data.length > paginate_by ) {
+        pages = Math.round ( data.length / paginate_by );
+        last_page = data.length % paginate_by;
+    }
+
+    // no hay nada mas allá de la úlitma página, así que vuelve a la última.
+    if ( page > pages ) {
+        page = pages;
+    }
+
+    // evalua si tiene una página anterior
+    if ( pages > 1 && page > 1 ) { 
+        prev = true;
+    }
+    else {
+        prev = false;
+    }
+
+    // evalua si tiene una página siguiente
+    if ( pages > 1 && page < pages ) {
+        next = true;
+    }
+    else {
+        next = false;
+    }
+
+    // si esta en la primer página itera desde el principio
+    // sino desde el la pagina actual
+    if ( page == 1 ) {
+        from_item = 0;
+    }
+    else {
+        from_item = ( page - 1 ) * paginate_by;
+    }
+
+    to_item = ( page * paginate_by );
+
+
+    if (  pages <= 1 ) {
+        $("#paginador").hide();
+    }
+    else {
+        // itera y genera los links del paginador
+        for (p = 1; p <= pages; p++ ) {
+            link += "<li" + ( p == page ? " class=\"active\"" : "") + "><a href=\"" + url[1]  + "/page=" + p + "\">" + p + "</a></li>";
+        }
+
+        $("#paginador").show();
+        $("#paginador ul").html(
+            "<li><a href=\"" + url[1] + "/page=" + (prev ? page - 1 : 1) + "\">←</a></li>" + 
+            link + 
+            "<li><a href=\"" + url[1] + "/page=" + (next ? page + 1 : page ) + "\">→</a></li>"
+        );
+    }
+
+    return {
+        paginate_by : paginate_by, 
+        pages : pages, 
+        last_page : last_page, 
+        page : page, 
+        prev : prev, 
+        next : next,
+        from_item : from_item, 
+        to_item : to_item,
+        totla_items: data.length
+    }
+
+}
+
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // jQuery - Protección automatica para formularios via ajax
