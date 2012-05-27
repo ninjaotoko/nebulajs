@@ -763,15 +763,16 @@ function paginate( data, page, paginate_by ) {
 (function($){
     $.fn.ajaxsubmit = function(options, callback) {
         
-        var callback = typeof callback == 'function' ? callback : typeof options == 'function' ? options : function() {}
-        , settings = {
-            namespace: 'ajax-submit',
-            notify: false,
-            cleanOnSuccess: true, // limpia el form luego de retornar con exito
-            debug: true,
-            initial: {}
-        }
-        , elements = this;
+        var m = this,
+            callback = typeof callback == 'function' ? callback : typeof options == 'function' ? options : function() {},
+            settings = {
+                namespace: 'ajax-submit',
+                notify: false,
+                cleanOnSuccess: true, // limpia el form luego de retornar con exito
+                debug: true,
+                initial: {}
+            },
+            elements = this;
 
         if (typeof options != 'function') {  $.extend(settings, options) }
 
@@ -780,7 +781,9 @@ function paginate( data, page, paginate_by ) {
             $("textarea, input[type=text]", element).val('');
             $("option:selected, input[type=radio]", element).removeAttr("selected");
             $("input[type=checkbox]:selected", element).removeAttr("checked");
-        };
+        }
+
+        function promise_callback () {}
 
         // recorre los elementos
         this.on("submit."+settings.namespace, function(event) {
@@ -799,7 +802,7 @@ function paginate( data, page, paginate_by ) {
                info = Notify.info("Enviando los datos", "puede tardar un momento :)", 30*1000);
             }
 
-            promise.fail(callback);
+            promise_callback(promise)
 
             promise.always(function(data, msg, request) {
                 if (settings.notify) { 
@@ -825,7 +828,8 @@ function paginate( data, page, paginate_by ) {
         });
 
         return {
-            clean: function () { clean(this.element) }
+            clean: function () { clean(this.element) },
+            promise_callback: function ( fn ) { m.promise_callback = fn }
         }
     }
 })(window.jQuery);
