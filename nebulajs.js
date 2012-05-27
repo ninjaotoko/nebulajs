@@ -369,7 +369,8 @@ function evaluate_request(request) {
 ////////////////////////////////////////////////////////////////////////////////
 var notify_request = (function(){
 
-    var config = {
+    var m = this,
+        config = {
             delay_fail: 4000,
             delay_info: 5000,
             delay_success: 3500
@@ -407,7 +408,9 @@ var notify_request = (function(){
 
             return true;
         }
-    };
+    },
+    callback_fail = function ( ) { },
+    callback_done = function ( ) { };
 
     return {
         flag: {
@@ -416,10 +419,10 @@ var notify_request = (function(){
             WARNING: WARNING,
             ERROR: ERROR
         },
-        config: function ( args ) { $.extend(config, args) },
-        evaluate_request: function ( request ) { return evaluate ( request ) }
-        //fail: function ( callback ) { },
-        //done: function ( callback ) { }
+        config: function ( args ) { $.extend(config, args); return m },
+        evaluate: function ( request ) { evaluate ( request; return m ) }
+        fail: function ( fn ) { m.callback_fail = fn; return m },
+        done: function ( fn ) { m.callback_done = fn; return m }
     }
 
 })();
