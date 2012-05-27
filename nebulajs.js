@@ -379,7 +379,7 @@ var notify_request = (function(){
         WARNING = 'warning',
         ERROR = 'error',
     
-    evaluate: function ( request ) {
+    evaluate = function ( request ) {
 
         if (request.status == 500) { // error 500
             Notify.error('Error ;(', 'Algo ha fallado, intenta nuevamente!', config.delay_fail);
