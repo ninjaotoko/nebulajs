@@ -405,7 +405,7 @@ var notify_request = (function(){
                     ti = data.meta.message;
 
                     Notify.render(typ, ti, co, config.delay_success);
-                    m.callback_fail(request);
+                    callback_fail(request);
                     return false;
                 }
             });
