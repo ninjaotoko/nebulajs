@@ -409,7 +409,7 @@ var notify_request = (function(){
                     return false;
                 }
             });
-            m.callback_done(request);
+            callback_done(request);
             return true;
         }
     },
