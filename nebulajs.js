@@ -717,13 +717,13 @@ function paginate( data, page, paginate_by ) {
 
             // simple cache
             var element = $(this)
-            , data = $.extend(settings.initial, element.serializeJSON)
+            , data = $.extend( settings.initial, element.serializeJSON() )
             , action = element.attr('action')
             , promise = $.post(action, data)
             , start_send = Date.now(), info;
 
 
-            console.log( data, settings.data, element.serializeJSON );
+            console.log( data, settings.data, element.serializeJSON() );
 
             // avisa que esta mandando el form
             if (settings.notify) {
