@@ -791,7 +791,7 @@ function paginate( data, page, paginate_by ) {
             var element = $(this)
             , data = $.extend( settings.initial, element.serializeJSON() )
             , action = element.attr('action')
-            , promise = $.post(action, data)
+            , promise = $.post(action, data, callback)
             , start_send = Date.now(), info;
 
             // avisa que esta mandando el form
@@ -811,9 +811,9 @@ function paginate( data, page, paginate_by ) {
 
             if (!settings.notify) { 
                 try { info.clear() } catch ( E ) {}
-                $.when(promise).then(function (data, msg, request) { 
-                    callback.apply(element, Array.prototype.slice.call([data,msg,request]))
-                });
+                //$.when(promise).then(function (data, msg, request) { 
+                //    callback.apply(element, Array.prototype.slice.call([data,msg,request]))
+                //});
             }
 
             if (settings.debug) {
