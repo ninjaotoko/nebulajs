@@ -809,6 +809,8 @@ function paginate( data, page, paginate_by ) {
                 } 
             });
 
+            promise.fail(callback);
+
             if (!settings.notify) { 
                 try { info.clear() } catch ( E ) {}
                 //$.when(promise).then(function (data, msg, request) { 
