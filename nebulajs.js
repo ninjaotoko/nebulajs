@@ -423,10 +423,10 @@ var notify_request = (function(){
             WARNING: WARNING,
             ERROR: ERROR
         },
-        config: function ( args ) { $.extend(config, args); return m },
-        evaluate: function ( request ) { evaluate( request ); return m },
-        fail: function ( fn ) { callback_fail = fn; return m },
-        done: function ( fn ) { callback_done = fn; return m }
+        config: function ( args ) { $.extend(config, args); return this },
+        evaluate: function ( request ) { evaluate( request ); return this },
+        fail: function ( fn ) { callback_fail = fn; return this },
+        done: function ( fn ) { callback_done = fn; return this }
     }
 
 })();
