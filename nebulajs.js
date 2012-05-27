@@ -672,6 +672,20 @@ function paginate( data, page, paginate_by ) {
 
 
 ////////////////////////////////////////////////////////////////////////////////
+// jQuery - util para serializar un form a JSON
+////////////////////////////////////////////////////////////////////////////////
+(function($){
+    $.fn.serializeJSON=function() {
+        var json = {};
+        $.map($(this).serializeArray(), function(n, i){
+            json[n['name']] = n['value'];
+        });
+        return json;
+    };
+})(window.jQuery);
+
+
+////////////////////////////////////////////////////////////////////////////////
 // jQuery - clase para form-ajax 
 ////////////////////////////////////////////////////////////////////////////////
 (function($){
@@ -683,7 +697,7 @@ function paginate( data, page, paginate_by ) {
             notify: false,
             cleanOnSuccess: true, // limpia el form luego de retornar con exito
             debug: true,
-            data: {}
+            initial: {}
         }
         , elements = this;
 
@@ -703,13 +717,13 @@ function paginate( data, page, paginate_by ) {
 
             // simple cache
             var element = $(this)
-            , data = $.extend(settings.data, element.serializeArray()[0])
+            , data = $.extend(settings.initial, element.serializeJSON)
             , action = element.attr('action')
             , promise = $.post(action, data)
             , start_send = Date.now(), info;
 
 
-            console.log( data, settings.data, element.serializeArray()[0] );
+            console.log( data, settings.data, element.serializeJSON );
 
             // avisa que esta mandando el form
             if (settings.notify) {
