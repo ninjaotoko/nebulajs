@@ -675,7 +675,7 @@ function paginate( data, page, paginate_by ) {
             notify: false,
             cleanOnSuccess: true, // limpia el form luego de retornar con exito
             debug: true,
-            data: data || {}
+            data: {}
         }
         , elements = this;
 
