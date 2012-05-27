@@ -709,6 +709,8 @@ function paginate( data, page, paginate_by ) {
             , start_send = Date.now(), info;
 
 
+            console.log( data, settings.data, element.serialize() );
+
             // avisa que esta mandando el form
             if (settings.notify) {
                info = Notify.info("Enviando los datos", "puede tardar un momento :)", 30*1000);
