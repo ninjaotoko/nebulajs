@@ -674,7 +674,8 @@ function paginate( data, page, paginate_by ) {
             namespace: 'ajax-submit',
             notify: false,
             cleanOnSuccess: true, // limpia el form luego de retornar con exito
-            debug: true
+            debug: true,
+            data = data || {}
         }
         , elements = this;
 
@@ -694,7 +695,7 @@ function paginate( data, page, paginate_by ) {
 
             // simple cache
             var element = $(this)
-            , data = element.serialize() 
+            , data = $.extend(settings.data, element.serialize())
             , action = element.attr('action')
             , promise = $.post(action, data)
             , start_send = Date.now(), info;
