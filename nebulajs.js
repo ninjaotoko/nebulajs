@@ -381,19 +381,21 @@ var notify_request = (function(){
         ERROR = 'error',
     
     evaluate = function ( request ) {
-
-        if (request.status == 500) { // error 500
+        // ERROR 500
+        if (request.status == 500) {
             Notify.error('Error ;(', 'Algo ha fallado, intenta nuevamente!', config.delay_fail);
         }
-        if (request.status == 404) { // error 404
+        // ERROR 404
+        if (request.status == 404) {
             Notify.warning('Cuidado :(', 'Al parecer eso no hace nada ¿?', config.delay_fail);
         }
-        if (request.status == 304) { // info 304
+        // INFO 304
+        if (request.status == 304) {
             Notify.info('Cargando :)', 'cargando bytes...', config.delay_info);
             return true;
         }
-        if (request.status == 200) { // 200 ok
-
+        // 200 OK
+        if (request.status == 200) {
             // evalua data para encontrar 'error'
             request.done(function(data) {
                 var e,typ,ti,co;
@@ -402,10 +404,11 @@ var notify_request = (function(){
                     ti = data.meta.message;
 
                     Notify.render(typ, ti, co, config.delay_success);
+                    m.callback_fail(request);
                     return false;
                 }
             });
-
+            m.callback_done(request);
             return true;
         }
     },
