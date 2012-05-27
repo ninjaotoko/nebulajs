@@ -311,6 +311,11 @@ var asyncload = function ( url_scripts ) {
 // Utils pata Notify
 ////////////////////////////////////////////////////////////////////////////////
 function evaluate_request(request) {
+    var SUCCESS = 'success',
+        INFO = 'info',
+        WARNING = 'warning',
+        ERROR = 'error';
+
     if (request.status == 500) { // error 500
         Notify.error('Error ;(', 'Algo ha fallado, intenta nuevamente!', 3500);
     }
@@ -343,7 +348,7 @@ function evaluate_request(request) {
                 return false;
             }
             // evalua los datos para "meta" de la API
-            else if ( data.meta && data.response ) {
+            else if ( data.meta && data.response && data.meta.status_type != SUCCESS ) {
                 typ = data.meta.status_type;
                 ti = data.meta.message;
 
@@ -383,7 +388,6 @@ var Notify = (function() {
         clear: function(){ cleartime(this.m); }
     }
 }());
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // xUI, temaplates simples pero poderosos
@@ -721,9 +725,6 @@ function paginate( data, page, paginate_by ) {
             , action = element.attr('action')
             , promise = $.post(action, data)
             , start_send = Date.now(), info;
-
-
-            console.log( data, settings.data, element.serializeJSON() );
 
             // avisa que esta mandando el form
             if (settings.notify) {
