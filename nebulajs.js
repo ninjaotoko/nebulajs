@@ -477,7 +477,7 @@ var xUI = (function(){
     , vars = {}
 
     // regexp para identificar una variable de template con filtros y demas
-    , var_exp = new RegExp(/\$\{\s?([a-zA-Z0-9\_\-\.\|\:\'\"\s]+)\s?\}/g)
+    , var_exp = new RegExp(/\$\{\s?([a-zA-Z0-9\_\-\.\|\:\'\"\/\s]+)\s?\}/g)
 
     , filters = (function(){
         return {
@@ -572,34 +572,35 @@ var xUI = (function(){
     // resuelve una variable con filtros, argumentos, etc
     , resolve_vars = function(a){
         a = a.replace(/^\s+|\s+$/,'');
-        var parts = /([\w\.]+)(?:\|?(\w+))?(?:\:?(.*))/gi.exec( a ).slice(1)
-        obj = parts[0]
-        filter = parts[1]
-        args = parts[2]
-            return {
-                str: escape_slash(a),
-                obj: obj,
-                filter: filter,
-                args: args,
-                get: function ( obj ) { 
-                    // resuelve el contexto de la variable, desde el objeto a renderizar
-                    // obj es algo como , user -> user.elemento.elemento.elemento....
+        var parts = /([\w\.]+)(?:\|?(\w+))?(?:\:?(.*))/gi.exec( a ).slice(1),
+            obj = parts[0],
+            filter = parts[1],
+            args = parts[2];
 
-                    obj = resolve_obj( obj, this.obj )
+        return {
+            str: escape_slash(a),
+            obj: obj,
+            filter: filter,
+            args: args,
+            get: function ( obj ) { 
+                // resuelve el contexto de la variable, desde el objeto a renderizar
+                // obj es algo como , user -> user.elemento.elemento.elemento....
 
-                    /* log console.log( o ) */
-                    if ( this.filter && filters[ this.filter ] ) {
-                        if ( this.args ) {
-                            obj = filters[this.filter] ( obj, this.args )
-                        }
-                        else {
-                            obj = filters[this.filter] ( obj )
-                        }
+                obj = resolve_obj( obj, this.obj )
+
+                /* log console.log( o ) */
+                if ( this.filter && filters[ this.filter ] ) {
+                    if ( this.args ) {
+                        obj = filters[this.filter] ( obj, this.args )
                     }
-
-                    return obj
+                    else {
+                        obj = filters[this.filter] ( obj )
+                    }
                 }
+
+                return obj
             }
+        }
     }
 
     return {
