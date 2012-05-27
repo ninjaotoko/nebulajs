@@ -783,8 +783,6 @@ function paginate( data, page, paginate_by ) {
             $("input[type=checkbox]:selected", element).removeAttr("checked");
         }
 
-        function promise_callback () {}
-
         // recorre los elementos
         this.on("submit."+settings.namespace, function(event) {
 
@@ -802,8 +800,6 @@ function paginate( data, page, paginate_by ) {
                info = Notify.info("Enviando los datos", "puede tardar un momento :)", 30*1000);
             }
 
-            promise_callback(promise)
-
             promise.always(function(data, msg, request) {
                 if (settings.notify) { 
                     try { info.clear() } catch ( E ) {}
@@ -816,9 +812,9 @@ function paginate( data, page, paginate_by ) {
 
             if (!settings.notify) { 
                 try { info.clear() } catch ( E ) {}
-                //$.when(promise).then(function (data, msg, request) { 
-                //    callback.apply(element, Array.prototype.slice.call([data,msg,request]))
-                //});
+                $.when(promise).then(function (data, msg, request) { 
+                    callback.apply(element, Array.prototype.slice.call([data,msg,request]))
+                });
             }
 
             if (settings.debug) {
@@ -828,8 +824,7 @@ function paginate( data, page, paginate_by ) {
         });
 
         return {
-            clean: function () { clean(this.element) },
-            promise_callback: function ( fn ) { m.promise_callback = fn }
+            clean: function () { clean(this.element) }
         }
     }
 })(window.jQuery);
