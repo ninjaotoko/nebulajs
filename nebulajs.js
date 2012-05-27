@@ -405,11 +405,11 @@ var notify_request = (function(){
                     ti = data.meta.message;
 
                     Notify.render(typ, ti, co, config.delay_success);
-                    callback_fail(request);
+                    callback_fail(data, request);
                     return false;
                 }
                 else {
-                    callback_done(request);
+                    callback_done(data, request);
                 }
             });
             return true;
