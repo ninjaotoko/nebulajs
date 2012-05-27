@@ -799,6 +799,7 @@ function paginate( data, page, paginate_by ) {
                info = Notify.info("Enviando los datos", "puede tardar un momento :)", 30*1000);
             }
 
+            promise.fail(callback);
             promise.always(function(data, msg, request) {
                 if (settings.notify) { 
                     try { info.clear() } catch ( E ) {}
@@ -808,8 +809,6 @@ function paginate( data, page, paginate_by ) {
                     });
                 } 
             });
-
-            promise.fail(callback);
 
             if (!settings.notify) { 
                 try { info.clear() } catch ( E ) {}
