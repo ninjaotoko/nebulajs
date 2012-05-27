@@ -425,8 +425,8 @@ var notify_request = (function(){
         },
         config: function ( args ) { $.extend(config, args); return m },
         evaluate: function ( request ) { evaluate( request ); return m },
-        fail: function ( fn ) { m.callback_fail = fn; return m },
-        done: function ( fn ) { m.callback_done = fn; return m }
+        fail: function ( fn ) { callback_fail = fn; return m },
+        done: function ( fn ) { callback_done = fn; return m }
     }
 
 })();
