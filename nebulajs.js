@@ -420,7 +420,7 @@ var notify_request = (function(){
             ERROR: ERROR
         },
         config: function ( args ) { $.extend(config, args); return m },
-        evaluate: function ( request ) { evaluate ( request; return m ) }
+        evaluate: function ( request ) { evaluate( request ); return m }
         fail: function ( fn ) { m.callback_fail = fn; return m },
         done: function ( fn ) { m.callback_done = fn; return m }
     }
