@@ -310,6 +310,7 @@ var asyncload = function ( url_scripts ) {
 ////////////////////////////////////////////////////////////////////////////////
 // Utils pata Notify
 ////////////////////////////////////////////////////////////////////////////////
+// ESTA FUNCION QUEDA FUERA DE USO Y ES REEMPLAZADA CON EL MODULO notify_request
 function evaluate_request(request) {
     var SUCCESS = 'success',
         INFO = 'info',
@@ -362,6 +363,66 @@ function evaluate_request(request) {
     
     return false;
 }
+////////////////////////////////////////////////////////////////////////////////
+// Nueva aplicación para evaluar el request y notificar.
+// Compatible con Meta y Request de la API
+////////////////////////////////////////////////////////////////////////////////
+var notify_request = (function(){
+
+    var config = {
+            delay_fail: 4000,
+            delay_info: 5000,
+            delay_success: 3500
+        },
+        SUCCESS = 'success',
+        INFO = 'info',
+        WARNING = 'warning',
+        ERROR = 'error',
+    
+    evaluate: function ( request ) {
+
+        if (request.status == 500) { // error 500
+            Notify.error('Error ;(', 'Algo ha fallado, intenta nuevamente!', config.delay_fail);
+        }
+        if (request.status == 404) { // error 404
+            Notify.warning('Cuidado :(', 'Al parecer eso no hace nada ¿?', config.delay_fail);
+        }
+        if (request.status == 304) { // info 304
+            Notify.info('Cargando :)', 'cargando bytes...', config.delay_info);
+            return true;
+        }
+        if (request.status == 200) { // 200 ok
+
+            // evalua data para encontrar 'error'
+            request.done(function(data) {
+                var e,typ,ti,co;
+                if ( data.meta && data.response && data.meta.status_type != SUCCESS ) {
+                    typ = data.meta.status_type;
+                    ti = data.meta.message;
+
+                    Notify.render(typ, ti, co, config.delay_success);
+                    return false;
+                }
+            });
+
+            return true;
+        }
+    };
+
+    return {
+        flag: {
+            SUCCESS: SUCCESS,
+            INFO: INFO,
+            WARNING: WARNING,
+            ERROR: ERROR
+        },
+        config: function ( args ) { $.extend(config, args) },
+        evaluate_request: function ( request ) { return evaluate ( request ) }
+        //fail: function ( callback ) { },
+        //done: function ( callback ) { }
+    }
+
+})();
 
 ////////////////////////////////////////////////////////////////////////////////
 // Notify
