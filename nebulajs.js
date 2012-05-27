@@ -342,6 +342,14 @@ function evaluate_request(request) {
                 Notify.render(typ, ti, co, 5000);
                 return false;
             }
+            // evalua los datos para "meta" de la API
+            else if ( data.meta && data.response ) {
+                typ = data.meta.status_type;
+                ti = data.meta.message;
+
+                Notify.render(typ, ti, co, 5000);
+                return false;
+            }
         });
 
         return true;
