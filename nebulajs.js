@@ -791,7 +791,7 @@ function paginate( data, page, paginate_by ) {
             var element = $(this)
             , data = $.extend( settings.initial, element.serializeJSON() )
             , action = element.attr('action')
-            , promise = $.post(action, data, callback)
+            , promise = $.post(action, data)
             , start_send = Date.now(), info;
 
             // avisa que esta mandando el form
@@ -800,6 +800,7 @@ function paginate( data, page, paginate_by ) {
             }
 
             promise.fail(callback);
+
             promise.always(function(data, msg, request) {
                 if (settings.notify) { 
                     try { info.clear() } catch ( E ) {}
