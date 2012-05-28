@@ -821,7 +821,7 @@ function paginate( data, page, paginate_by ) {
                         callback.apply(element, Array.prototype.slice.call([data,msg,request]));
                     });
                 } 
-            }).complete(function(){ try { info.clear() } catch ( E ) {} });
+            }).fail(function(){ try { info.clear() } catch ( E ) {} });
 
             if (!settings.notify) { 
                 try { info.clear() } catch ( E ) {}
