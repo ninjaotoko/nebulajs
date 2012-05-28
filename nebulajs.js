@@ -383,25 +383,29 @@ var notify_request = (function(){
     evaluate = function (data, msg, request) {
         console.log(data, msg, request)
         // ERROR 500
-        if (request.status == 500) {
+        if (request.status == 500 || data.status == 500) {
             Notify.error('Error ;(', 'Algo ha fallado, intenta nuevamente!', config.delay_fail);
         }
         // ERROR 404
-        if (request.status == 404) {
+        if (request.status == 404 || data.status == 404) {
             Notify.warning('Cuidado :(', 'Al parecer eso no hace nada ¿?', config.delay_fail);
         }
         // ERROR 403
-        if (request.status == 403) {
+        if (request.status == 403 || data.status == 403) {
             Notify.warning('Cuidado :(', 'Al parecer eso no hace nada, recuerda logearte para usar el sistema.', config.delay_info);
         }
         // INFO 304
-        if (request.status == 304) {
+        if (request.status == 304 || data.status == 304) {
             Notify.info('Cargando :)', 'cargando bytes...', config.delay_info);
             return true;
         }
         // 200 OK
-        if (request.status == 200) {
+        if (request.status == 200 || data.status == 200) {
             // evalua data para encontrar 'error'
+            // si request es NO es un objecto entonces data toma su lugar
+            if ( $n.utils.isObject(data) && !$n.utils.isObject(request) ) {
+                request = data
+            }
             request.done(function(data) {
                 var e,typ,ti,co;
                 if ( data.meta && data.response && data.meta.status_type != SUCCESS ) {
