@@ -813,7 +813,7 @@ function paginate( data, page, paginate_by ) {
 
             promise.always(function(data, msg, request) {
                 if (settings.notify) { 
-                    try { info.clear() } catch ( E ) {}
+                    try { setTimeout(function(){ info.clear() }, 500) } catch ( E ) {}
                     $.when(evaluate_request(request)).then(function () { 
                         callback.apply(element, Array.prototype.slice.call([data,msg,request]));
                         if (settings.cleanOnSuccess) { clean() }
