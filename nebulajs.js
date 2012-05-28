@@ -381,7 +381,7 @@ var notify_request = (function(){
         ERROR = 'error',
     
     evaluate = function ( request ) {
-        console.log(request)
+        console.log(request, request.status)
         // ERROR 500
         if (request.status == 500) {
             Notify.error('Error ;(', 'Algo ha fallado, intenta nuevamente!', config.delay_fail);
@@ -389,6 +389,10 @@ var notify_request = (function(){
         // ERROR 404
         if (request.status == 404) {
             Notify.warning('Cuidado :(', 'Al parecer eso no hace nada ¿?', config.delay_fail);
+        }
+        // ERROR 403
+        if (request.status == 403) {
+            Notify.warning('Cuidado :(', 'Al parecer eso no hace nada, recuerda logearte para usar el sistema.', config.delay_fail);
         }
         // INFO 304
         if (request.status == 304) {
