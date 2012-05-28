@@ -381,7 +381,7 @@ var notify_request = (function(){
         ERROR = 'error',
     
     evaluate = function (data, msg, request) {
-        console.log(data, msg, request, request.status)
+        console.log(data, msg, request)
         // ERROR 500
         if (request.status == 500) {
             Notify.error('Error ;(', 'Algo ha fallado, intenta nuevamente!', config.delay_fail);
