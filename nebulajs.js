@@ -811,7 +811,7 @@ function paginate( data, page, paginate_by ) {
                info = Notify.info("Enviando los datos", "puede tardar un momento :)", 30*1000);
             }
 
-            promise.always(function(data, msg, request) {
+            promise.complete(function(data, msg, request) {
                 if (settings.notify) { 
                     try { setTimeout(function(){ info.clear() }, 500) } catch ( E ) {}
                     $.when(evaluate_request(request)).then(function () { 
