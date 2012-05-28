@@ -809,6 +809,8 @@ function paginate( data, page, paginate_by ) {
                     $.when(evaluate_request(request)).then(function () { 
                         callback.apply(element, Array.prototype.slice.call([data,msg,request]));
                         if (settings.cleanOnSuccess) { clean() }
+                    }).fail(function(){
+                        callback.apply(element, Array.prototype.slice.call([data,msg,request]));
                     });
                 } 
             });
@@ -816,6 +818,8 @@ function paginate( data, page, paginate_by ) {
             if (!settings.notify) { 
                 try { info.clear() } catch ( E ) {}
                 $.when(promise).then(function (data, msg, request) { 
+                    callback.apply(element, Array.prototype.slice.call([data,msg,request]))
+                }).fail(function (data, msg, request) { 
                     callback.apply(element, Array.prototype.slice.call([data,msg,request]))
                 });
             }
