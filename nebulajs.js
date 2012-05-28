@@ -430,7 +430,7 @@ var notify_request = (function(){
             ERROR: ERROR
         },
         config: function ( args ) { $.extend(config, args); return this },
-        evaluate: function ( request ) { evaluate( request ); return this },
+        evaluate: function ( data, msg, request ) { evaluate( data, msg, request ); return this },
         fail: function ( fn ) { callback_fail = fn; return this },
         done: function ( fn ) { callback_done = fn; return this }
     }
