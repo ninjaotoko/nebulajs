@@ -518,7 +518,7 @@ var xUI = (function(){
 
     // render context. itera en la data y reemplaza en el template
     , render = function ( data ) {
-        if ( toString.call(data) != '[object Array]' ) {
+        if ( !$n.utils.isArray(data) ) {
             data = [data];
         }
         var n, result='';
