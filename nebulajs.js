@@ -392,7 +392,7 @@ var notify_request = (function(){
         }
         // ERROR 403
         if (request.status == 403) {
-            Notify.warning('Cuidado :(', 'Al parecer eso no hace nada, recuerda logearte para usar el sistema.', config.delay_fail);
+            Notify.warning('Cuidado :(', 'Al parecer eso no hace nada, recuerda logearte para usar el sistema.', config.delay_info);
         }
         // INFO 304
         if (request.status == 304) {
