@@ -789,7 +789,7 @@ function paginate( data, page, paginate_by ) {
 
         function clean(element) {
             // limpia el form
-            $("textarea, input[type=text]", element).val('');
+            $("textarea, input[type=text], input[type=password]", element).val('');
             $("option:selected, input[type=radio]", element).removeAttr("selected");
             $("input[type=checkbox]:selected", element).removeAttr("checked");
         }
