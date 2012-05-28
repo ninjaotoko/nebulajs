@@ -445,12 +445,27 @@ var notify_request = (function(){
 // Notify
 ////////////////////////////////////////////////////////////////////////////////
 var Notify = (function() {
-    var tpl = ['<div class="message ',,'"><h3>',,'</h3><p>',,'</p></div>'],
+    var tpl = ['<div class="notify-message-bar"><div class="notify message ',,'"><h3>',,'</h3><p>',,'</p></div></div>'],
     render = function(msgtype, title, message, timeout){
-        var timeout = timeout || (1000 * 30);
-        tpl[1] = msgtype, tpl[3] = title, tpl[5] = message;
-        var m = $(tpl.join(''));
-        m = $(m).css({position:'fixed', top:-100}).animate({top:0}).delay(timeout).animate({top:-100}, function(){ cleartime(m) });
+        var m,
+            timeout = timeout || (1000 * 30);
+
+        tpl[1] = msgtype;
+        tpl[3] = title;
+        tpl[5] = message;
+
+        m = $(tpl.join(''));
+        m = $(m).css({
+            position:'fixed', 
+            top:-100
+        }).animate({
+            top:0
+        }).delay(timeout).animate({
+            top:-100
+        }, function(){ 
+            cleartime(m) 
+        });
+
         $('body', top.document).append(m);
         return m;
     },
@@ -463,7 +478,7 @@ var Notify = (function() {
         info: function(title, msg, timeout){ this.m = render('info', title, msg, timeout); return this },
         warning: function(title, msg, timeout){ this.m = render('warning', title, msg, timeout); return this },
         success: function(title, msg, timeout){ this.m = render('success', title, msg, timeout); return this },
-        clear: function(){ cleartime(this.m); }
+        clear: function(fn){ cleartime(this.m); }
     }
 }());
 
