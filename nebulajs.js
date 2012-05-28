@@ -371,8 +371,8 @@ var notify_request = (function(){
 
     var m = this,
         config = {
-            delay_fail: 4000,
-            delay_info: 5000,
+            delay_fail: 5000,
+            delay_info: 6000,
             delay_success: 3500
         },
         SUCCESS = 'success',
