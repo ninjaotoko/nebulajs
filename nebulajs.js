@@ -513,8 +513,7 @@ var notify_request = (function(){
 var Notify = (function() {
     var tpl = ['<div class="notify-message-bar"><div class="notify message ',,'"><h3>',,'</h3><p>',,'</p></div></div>'],
     render = function(msgtype, title, message, timeout, fn){
-        var m, 
-            timeout = timeout || (1000 * 30),
+        var m, timeout = timeout || (1000 * 30);
 
         tpl[1] = msgtype;
         tpl[3] = title;
