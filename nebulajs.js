@@ -294,6 +294,38 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 // Utilidades
+// Estas utilidades son funciones variadas que resuelven tareas típicas y que
+// se pueden reutilizar.
+////////////////////////////////////////////////////////////////////////////////
+
+
+////////////////////////////////////////////////////////////////////////////////
+// xargs es una función que mapea un array o diccionario con los datos pasados
+// en una función y los transforma en un mapeo de arguemntos.
+//
+// xargs(arguments, mapping) -> mapping arguments
+// 
+//
+// ejemplo:
+// function(){
+//     var args = xargs(arguments, {
+//         obj: Object,
+//         key: String,
+//         val: none, /* es opscional */
+//         callback: none /* es opcional */
+//     })
+// }
+//
+////////////////////////////////////////////////////////////////////////////////
+var xargs = function(args, map){
+    if (!args && !map) { 
+        throw "Los arguemtnos no son válidos.\nxargs(arguments, mapping) -> mapping arguments"
+    }
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+// AsyncLoad, para cargar javascript de forma asyncrona.
 ////////////////////////////////////////////////////////////////////////////////
 var asyncload = function ( url_scripts ) {
     var i = 0, s, t = document.getElementsByTagName( 'script' )[0];
@@ -463,7 +495,7 @@ var notify_request = (function(){
 var Notify = (function() {
     var tpl = ['<div class="notify-message-bar"><div class="notify message ',,'"><h3>',,'</h3><p>',,'</p></div></div>'],
     render = function(msgtype, title, message, timeout){
-        var m,
+        var m, 
             timeout = timeout || (1000 * 30);
 
         tpl[1] = msgtype;
