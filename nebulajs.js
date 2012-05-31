@@ -831,11 +831,14 @@ function paginate( data, page, paginate_by ) {
             event.preventDefault();
 
             // simple cache
-            var element = $(this)
-            , data = $.extend( settings.initial, element.serializeJSON() )
-            , action = element.attr('action')
-            , promise = $.post(action, data)
-            , start_send = Date.now(), info;
+            var start_send = Date.now(),
+                element = $(this),
+                datajson = element.serializeJSON(),
+                initial = typeof settings.initial == 'function' ? settings.initial(datajson) : settings.initial,
+                data = $.extend(initial, datajson),
+                action = element.attr('action'),
+                promise = $.post(action, data),
+                info;
 
             // avisa que esta mandando el form
             if (settings.notify) {
