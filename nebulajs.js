@@ -335,7 +335,7 @@ var xargs = function(args, map){
         //    continue;
         //}
         
-        _parent[keys[c] =  kwargs[ keys[c] ] = args[c];
+        _parent[keys[c]] =  kwargs[keys[c]] = args[c];
     }
 
     return kwargs;
