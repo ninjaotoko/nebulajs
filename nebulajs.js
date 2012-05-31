@@ -301,7 +301,8 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 // xargs es una función que mapea un array o diccionario con los datos pasados
-// en una función y los transforma en un mapeo de arguemntos.
+// en una función y los transforma en un mapeo de arguemntos. El mapeo es
+// ordinal por lo que es necesario ordenarlo como el orden de argumentos.
 //
 // xargs(arguments, mapping) -> mapping arguments
 // 
@@ -309,18 +310,35 @@
 // ejemplo:
 // function(){
 //     var args = xargs(arguments, {
-//         obj: Object,
+//         obj: Object, /* requiere un tipo Object */
 //         key: String,
-//         val: none, /* es opscional */
-//         callback: none /* es opcional */
+//         val: undefined o void(0), /* es opcional */
+//         callback: function(){} /* setea un argumento por defecto */
 //     })
 // }
 //
 ////////////////////////////////////////////////////////////////////////////////
 var xargs = function(args, map){
+    // siempre undefined
+    undefined = void(0);
+
     if (!args && !map) { 
-        throw "Los arguemtnos no son válidos.\nxargs(arguments, mapping) -> mapping arguments"
+        throw "Los argumentos no son válidos.\nxargs(arguments, mapping) -> mapping arguments"
     }
+
+    var _parent=this, c, keys, kwargs={};
+    keys = map;
+    for(c=0; c < keys.length; c++){
+
+        // chequea si es un arg opcional
+        //if (map[ keys[c] ] == undefined && args[ keys[c] ] == undefined){
+        //    continue;
+        //}
+        
+        _parent[keys[c] =  kwargs[ keys[c] ] = args[c];
+    }
+
+    return kwargs;
 }
 
 
