@@ -334,8 +334,8 @@ var xargs = function(args, map){
         //if (map[ keys[c] ] == undefined && args[ keys[c] ] == undefined){
         //    continue;
         //}
-        
-        _parent[keys[c]] =  kwargs[keys[c]] = args[c];
+
+        kwargs[keys[c]] = args[c];
     }
 
     return kwargs;
@@ -512,9 +512,9 @@ var notify_request = (function(){
 ////////////////////////////////////////////////////////////////////////////////
 var Notify = (function() {
     var tpl = ['<div class="notify-message-bar"><div class="notify message ',,'"><h3>',,'</h3><p>',,'</p></div></div>'],
-    render = function(msgtype, title, message, timeout){
+    render = function(msgtype, title, message, timeout, fn){
         var m, 
-            timeout = timeout || (1000 * 30);
+            timeout = timeout || (1000 * 30),
 
         tpl[1] = msgtype;
         tpl[3] = title;
@@ -529,22 +529,27 @@ var Notify = (function() {
         }).delay(timeout).animate({
             top:-100
         }, function(){ 
-            cleartime(m) 
+            cleartime(m, fn)
         });
 
         $('body', top.document).append(m);
         return m;
     },
 
-    cleartime = function(m){ $(m).remove() };
+    cleartime = function(m, fn){ 
+        $(m).remove();
+        if(fn){
+            fn()
+        }
+    };
 
     return {
-        render: function(msgtype, title, msg, timeout){ this.m = render(msgtype, title, msg, timeout); return this },
-        error: function(title, msg, timeout){ this.m = render('error', title, msg, timeout); return this },
-        info: function(title, msg, timeout){ this.m = render('info', title, msg, timeout); return this },
-        warning: function(title, msg, timeout){ this.m = render('warning', title, msg, timeout); return this },
-        success: function(title, msg, timeout){ this.m = render('success', title, msg, timeout); return this },
-        clear: function(fn){ cleartime(this.m); }
+        render: function(msgtype, title, msg, timeout, fn){ this.m = render(msgtype, title, msg, timeout, fn); return this },
+        error: function(title, msg, timeout, fn){ this.m = render('error', title, msg, timeout, fn); return this },
+        info: function(title, msg, timeout, fn){ this.m = render('info', title, msg, timeout, fn); return this },
+        warning: function(title, msg, timeout, fn){ this.m = render('warning', title, msg, timeout, fn); return this },
+        success: function(title, msg, timeout, fn){ this.m = render('success', title, msg, timeout, fn); return this },
+        clear: function(fn){ cleartime(this.m, fn); return this }
     }
 }());
 
