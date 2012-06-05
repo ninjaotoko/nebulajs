@@ -973,6 +973,7 @@ function paginate( data, page, paginate_by ) {
             if ( asc ) { $(this).data('ascending', false); }
             else { $(this).data('ascending', true); }
         });
+        return this;
     };
 })(window.jQuery);
 
