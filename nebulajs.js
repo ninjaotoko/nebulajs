@@ -279,6 +279,8 @@
             }
         }());
 
+        
+
         this.utils = utils;
         this.watchHash = watchHash;
         this.Queue = Queue;
@@ -934,6 +936,44 @@ function paginate( data, page, paginate_by ) {
         }
     }
 })(window.jQuery);
+
+//////////////////////////////////////////////////////////////////////////////// 
+// Data Grid - Plugin that takes a table turns it into a sortable
+// Requirements: <thead> + ".sort" inside each th to use as 
+// sort + data-sort attr to set the target class
+// use .exsort to exclude a row from being sorted
+//////////////////////////////////////////////////////////////////////////////// 
+(function($){
+    $.fn.DataGrid = function(config) {        
+        var table = this;
+        var config = config;
+        $('thead th .sort', table).click( function (ev) {
+            ev.preventDefault();
+            var asc = $(this).data('ascending');
+            var field = $(this).attr('data-sort');
+            var l = $('tbody tr', table).sort( function (a,b ) { 
+                if ( $(a).hasClass('exsort') || $(b).hasClass('exsort') ) { return 0; }
+                var a = $('td.' + field , a).text().trim().toLowerCase();
+                var b = $('td.' + field , b).text().trim().toLowerCase();
+                if ( a.split('/').length == 3 && b.split('/').length ) { // Might be a date
+                    try {
+                        _a = new Date( a.split('/').reverse() );
+                        _b = new Date( b.split('/').reverse() );
+                        if ( _a && _b ) { a = _a; b = _b; }
+                    }
+                    catch (err) { /* do nothing */ }
+                }
+                if ( asc ) { return  a < b ? 1 : -1; }
+                return  a > b ? 1 : -1; 
+            });
+            var pager = paginate(l, config['paginate_by'], 1);
+            table.find('tbody').empty().append(l.slice(pager.from_item, pager.to_item)).data('pager', pager);
+            if ( asc ) { $(this).data('ascending', false); }
+            else { $(this).data('ascending', true); }
+        });
+    };
+})(window.jQuery);
+
 
 // Carga underscore si no existe
 if ( !window._ ) {
