@@ -794,7 +794,8 @@ function paginate( data, page, paginate_by ) {
         next : next,
         from_item : from_item, 
         to_item : to_item,
-        total_items: data.length
+        total_items: data.length,
+        qs: data,
     }
 
 }
@@ -947,11 +948,13 @@ function paginate( data, page, paginate_by ) {
     $.fn.DataGrid = function(config) {        
         var table = this;
         var config = config;
+        var pager = paginate($('tbody tr, table'), 1, config['paginate_by']);
+        table.data('pager', pager)
         $('thead th .sort', table).click( function (ev) {
             ev.preventDefault();
             var asc = $(this).data('ascending');
             var field = $(this).attr('data-sort');
-            var l = $('tbody tr', table).sort( function (a,b ) { 
+            var l = pager.qs.sort( function (a,b ) { 
                 if ( $(a).hasClass('exsort') || $(b).hasClass('exsort') ) { return 0; }
                 var a = $('td.' + field , a).text().trim().toLowerCase();
                 var b = $('td.' + field , b).text().trim().toLowerCase();
@@ -966,8 +969,7 @@ function paginate( data, page, paginate_by ) {
                 if ( asc ) { return  a < b ? 1 : -1; }
                 return  a > b ? 1 : -1; 
             });
-            var pager = paginate(l, 1, config['paginate_by']);
-            table.find('tbody').empty().append(l.slice(pager.from_item, pager.to_item)).data('pager', pager);
+            table.find('tbody').empty().append(l);
             if ( asc ) { $(this).data('ascending', false); }
             else { $(this).data('ascending', true); }
         });
