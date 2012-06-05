@@ -794,7 +794,7 @@ function paginate( data, page, paginate_by ) {
         next : next,
         from_item : from_item, 
         to_item : to_item,
-        totla_items: data.length
+        total_items: data.length
     }
 
 }
