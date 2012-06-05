@@ -969,7 +969,7 @@ function paginate( data, page, paginate_by ) {
                 if ( asc ) { return  a < b ? 1 : -1; }
                 return  a > b ? 1 : -1; 
             });
-            table.find('tbody').empty().append(l);
+            table.find('tbody').empty().append(l.slice(pager.from_item, to_item).clone());
             if ( asc ) { $(this).data('ascending', false); }
             else { $(this).data('ascending', true); }
         });
