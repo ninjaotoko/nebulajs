@@ -782,8 +782,8 @@ function paginate( data, page, paginate_by ) {
         try {
             step = parseInt(page);
         } catch (err) {
-            if ( next and page == 'next') { step = 1; }
-            if ( prev and page == 'previous') { step = -1; }
+            if ( next && page == 'next') { step = 1; }
+            if ( prev && page == 'previous') { step = -1; }
         }
         page = page + step;
         next = false; prev = false;
