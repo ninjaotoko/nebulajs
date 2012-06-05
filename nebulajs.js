@@ -756,15 +756,7 @@ function paginate( data, page, paginate_by ) {
         next = false;
     }
 
-    // si esta en la primer página itera desde el principio
-    // sino desde el la pagina actual
-    if ( page == 1 ) {
-        from_item = 0;
-    }
-    else {
-        from_item = ( page - 1 ) * paginate_by;
-    }
-
+    from_item = ( page - 1 ) * paginate_by;
     to_item = ( page * paginate_by );
 
 
@@ -785,6 +777,26 @@ function paginate( data, page, paginate_by ) {
         );
     }
 
+    function goto_page(page) {
+        var step;
+        try {
+            step = parseInt(page);
+        } catch (err) {
+            if ( next and page == 'next') { step = 1; }
+            if ( prev and page == 'previous') { step = -1; }
+        }
+        page = page + step;
+        next = false; prev = false;
+        if (page < last_page) { next = true; }
+        if ( page == 1 ) { prev = true; }
+        from_item = ( page - 1 ) * paginate_by;
+        to_item = ( page * paginate_by );
+    }
+
+    function get_page() {
+        qs.slice(from_item, to_item);
+    }
+
     return {
         paginate_by : paginate_by, 
         pages : pages, 
@@ -796,6 +808,8 @@ function paginate( data, page, paginate_by ) {
         to_item : to_item,
         total_items: data.length,
         qs: data,
+        goto_page: goto_page,
+        get_page: get_page
     }
 
 }
