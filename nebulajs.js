@@ -948,8 +948,8 @@ function paginate( data, page, paginate_by ) {
     $.fn.DataGrid = function(config) {        
         var table = this;
         var config = config;
-        var pager = paginate($('tbody tr, table'), 1, config['paginate_by']);
-        table.data('pager', pager)
+        var pager = paginate($('tbody tr', table).clone(true), 1, config['paginate_by']);
+        table.data('pager', pager);
         $('thead th .sort', table).click( function (ev) {
             ev.preventDefault();
             var asc = $(this).data('ascending');
