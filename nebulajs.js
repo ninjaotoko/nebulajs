@@ -966,7 +966,7 @@ function paginate( data, page, paginate_by ) {
                 if ( asc ) { return  a < b ? 1 : -1; }
                 return  a > b ? 1 : -1; 
             });
-            var pager = paginate(l, config['paginate_by'], 1);
+            var pager = paginate(l, 1, config['paginate_by']);
             table.find('tbody').empty().append(l.slice(pager.from_item, pager.to_item)).data('pager', pager);
             if ( asc ) { $(this).data('ascending', false); }
             else { $(this).data('ascending', true); }
