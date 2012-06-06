@@ -777,8 +777,8 @@ function paginate( data, page, paginate_by ) {
         );
     }
 
-    function goto_page(page) {
-        var step;
+    function goto_page(_page) {
+        /*var step;
         try {
             step = parseInt(page);
         } catch (err) {
@@ -790,12 +790,12 @@ function paginate( data, page, paginate_by ) {
         if (page < last_page) { next = true; }
         if ( page == 1 ) { prev = true; }
         from_item = ( page - 1 ) * paginate_by;
-        to_item = ( page * paginate_by );
-        return get_page();
+        to_item = ( page * paginate_by );*/
+        return paginate(data, _page, paginate_by);
     }
 
     function get_page() {
-        data.slice(from_item, to_item);
+        return data.slice(from_item, to_item);
     }
 
     return {
