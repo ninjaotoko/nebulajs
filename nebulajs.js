@@ -778,18 +778,12 @@ function paginate( data, page, paginate_by ) {
     }
 
     function goto_page(_page) {
-        try {
-            _page = parseInt(_page);
-        } catch (err) {
+
+        if ( isNaN(parseInt(_page)) ) {
             if ( next && _page == 'next') { _page = page + 1; }
             if ( prev && _page == 'previous') { _page = page - 1; }
         }
-        /*page = page + step;
-        next = false; prev = false;
-        if (page < last_page) { next = true; }
-        if ( page == 1 ) { prev = true; }
-        from_item = ( page - 1 ) * paginate_by;
-        to_item = ( page * paginate_by );*/
+
         return paginate(data, _page, paginate_by);
     }
 
