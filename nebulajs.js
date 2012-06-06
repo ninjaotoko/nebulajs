@@ -791,11 +791,11 @@ function paginate( data, page, paginate_by ) {
         if ( page == 1 ) { prev = true; }
         from_item = ( page - 1 ) * paginate_by;
         to_item = ( page * paginate_by );
-        return this.get_page();
+        return get_page();
     }
 
     function get_page() {
-        qs.slice(from_item, to_item);
+        data.slice(from_item, to_item);
     }
 
     return {
