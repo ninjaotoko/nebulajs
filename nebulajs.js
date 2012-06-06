@@ -778,14 +778,13 @@ function paginate( data, page, paginate_by ) {
     }
 
     function goto_page(_page) {
-        /*var step;
         try {
-            step = parseInt(page);
+            _page = parseInt(_page);
         } catch (err) {
-            if ( next && page == 'next') { step = 1; }
-            if ( prev && page == 'previous') { step = -1; }
+            if ( next && _page == 'next') { _page = page + 1; }
+            if ( prev && _page == 'previous') { _page = page - 1; }
         }
-        page = page + step;
+        /*page = page + step;
         next = false; prev = false;
         if (page < last_page) { next = true; }
         if ( page == 1 ) { prev = true; }
