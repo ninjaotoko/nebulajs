@@ -990,9 +990,3 @@ function paginate( data, page, paginate_by ) {
         return this;
     };
 })(window.jQuery);
-
-
-// Carga underscore si no existe
-if ( !window._ ) {
-    asyncload( 'http://underscorejs.org/underscore-min.js' );
-}
