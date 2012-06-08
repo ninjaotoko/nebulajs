@@ -653,7 +653,7 @@ var xUI = (function(){
         return vars
     }
 
-    // Resuelve la recursividad de un objeto, retorna el objeto final o undefunid
+    // Resuelve la recursividad de un objeto, retorna el objeto final o undefined
     , resolve_obj = function ( obj, strobj ) {
         strobj = strobj.split(/\./);
         for ( var i = 0; i < strobj.length; i++ ) {
