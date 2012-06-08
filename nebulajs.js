@@ -674,7 +674,13 @@ var xUI = (function(){
                 // identifica si es un metodo del objeto o una propiedad
                 if( $n.utils.isFunction( obj[ strobj[i] ] ) ){
                     console.log(obj, strobj[i])
-                    obj = obj[ strobj[i] ]( obj )
+                    try{ 
+                        obj = obj[ strobj[i] ]( obj )
+                    }catch(E){
+                        try{ 
+                            obj = obj[ strobj[i] ]() 
+                        }catch(E){}
+                    }
                 } else {
                     obj = obj[strobj[i]]
                 }
