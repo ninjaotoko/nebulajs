@@ -38,6 +38,9 @@
             , isObject : function ( object ) {
                 return object === Object( object ) && !Array.isArray( object )
             }
+            , isFunction : function ( obj ) { 
+                return toString.call(obj) == '[object Function]' 
+            }
             , keys : function ( object ) {
                 return Object.keys( object ) 
             }
@@ -591,6 +594,11 @@ var xUI = (function(){
             'getDateDay': function ( str ) { return new Date(str).getDate() },
             'getDateMonth': function ( str ) { return new Date(str).getMonth() + 1 },
             'getDateYear': function ( str ) { return new Date(str).getFullYear() },
+            
+            //filtros para horarios
+            'getTimeHours': function(str){ return new Date(str).getHours() },
+            'getTimeMinutes': function(str){ return new Date(str).getMinutes() },
+            'getTimeSeconds': function(str){ return new Date(str).getSeconds() },
 
             'length': function ( obj ) { 
                 if ( obj != undefined ) { return obj.length } else { return 0 } 
@@ -663,7 +671,12 @@ var xUI = (function(){
         strobj = strobj.split(/\./);
         for ( var i = 0; i < strobj.length; i++ ) {
             if ( obj.hasOwnProperty( strobj[i] ) ) {
-                obj = obj[strobj[i]]
+                // identifica si es un metodo del objeto o una propiedad
+                if( $n.utils.isFunction( obj[ strobj[i] ] ) ){
+                    obj = obj[ strobj[i] ]( obj )
+                } else {
+                    obj = obj[strobj[i]]
+                }
             } else return undefined;
         }
         return obj
