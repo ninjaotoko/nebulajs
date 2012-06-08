@@ -672,13 +672,12 @@ var xUI = (function(){
         for ( var i = 0; i < strobj.length; i++ ) {
             if ( obj.hasOwnProperty( strobj[i] ) || obj[ strobj[i] ]) {
                 // identifica si es un metodo del objeto o una propiedad
-                console.log(obj, strobj[i] )
                 if( $n.utils.isFunction( obj[ strobj[i] ] ) ){
                     try{ 
                         obj = obj[ strobj[i] ]( obj )
                     }catch(E){
                         try{ 
-                            obj = obj[ strobj[i] ]() 
+                            obj = obj[ strobj[i] ]()
                         }catch(E){}
                     }
                 } else {
