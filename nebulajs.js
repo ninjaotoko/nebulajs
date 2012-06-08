@@ -586,7 +586,12 @@ var xUI = (function(){
                 }
                 return s.join(' ')
             },
+            // filtro para fechas
             'toLocalDate': function ( str ) { return new Date(str).toLocaleDateString() },
+            'getDateDay': function ( str ) { return new Date(str).getDate() },
+            'getDateMonth': function ( str ) { return new Date(str).getMonth() + 1 },
+            'getDateYear': function ( str ) { return new Date(str).getFullYear() },
+
             'length': function ( obj ) { 
                 if ( obj != undefined ) { return obj.length } else { return 0 } 
             },
