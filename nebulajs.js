@@ -591,7 +591,11 @@ var xUI = (function(){
             },
             // filtro para fechas
             'toLocalDate': function ( str ) { return new Date(str).toLocaleDateString() },
+            'getDateDayName': function ( str ) { return ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"][new Date(str).getDay()] },
             'getDateDay': function ( str ) { return new Date(str).getDate() },
+            'getDateMonthName': function ( str ) { 
+                return ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"][new Date(str).getMonth()] 
+            },
             'getDateMonth': function ( str ) { return new Date(str).getMonth() + 1 },
             'getDateYear': function ( str ) { return new Date(str).getFullYear() },
             
