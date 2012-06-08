@@ -592,7 +592,11 @@ var xUI = (function(){
             // filtro para fechas
             'toLocalDate': function ( str ) { return new Date(str).toLocaleDateString() },
             'getDateDayName': function ( str ) { return ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"][new Date(str).getDay()] },
-            'getDateDay': function ( str ) { return new Date(str).getDate() },
+            'getDateDay': function ( str ) { 
+                var d = new Date(str).getDate();
+                if (d<10) { return ('0'+d.toString()) }
+                else { return d }
+            },
             'getDateMonthName': function ( str ) { 
                 return ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"][new Date(str).getMonth()] 
             },
@@ -601,8 +605,16 @@ var xUI = (function(){
             
             //filtros para horarios
             'getTimeHours': function(str){ return new Date(str).getHours() },
-            'getTimeMinutes': function(str){ return new Date(str).getMinutes() },
-            'getTimeSeconds': function(str){ return new Date(str).getSeconds() },
+            'getTimeMinutes': function(str){ 
+                var d = new Date(str).getMinutes();
+                if (d<10) { return ('0'+d.toString()) }
+                else { return d }
+            },
+            'getTimeSeconds': function(str){ 
+                var d = new Date(str).getSeconds();
+                if (d<10) { return ('0'+d.toString()) }
+                else { return d }
+            },
 
             'length': function ( obj ) { 
                 if ( obj != undefined ) { return obj.length } else { return 0 } 
