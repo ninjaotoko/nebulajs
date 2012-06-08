@@ -670,7 +670,7 @@ var xUI = (function(){
     , resolve_obj = function ( obj, strobj ) {
         strobj = strobj.split(/\./);
         for ( var i = 0; i < strobj.length; i++ ) {
-            if ( obj.hasOwnProperty( strobj[i] ) ) {
+            if ( obj.hasOwnProperty( strobj[i] ) || obj[ strobj[i] ]) {
                 // identifica si es un metodo del objeto o una propiedad
                 if( $n.utils.isFunction( obj[ strobj[i] ] ) ){
                     obj = obj[ strobj[i] ]( obj )
