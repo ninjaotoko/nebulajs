@@ -578,6 +578,13 @@ var xUI = (function(){
     , var_exp = new RegExp(/\$\{\s?([a-zA-Z0-9\_\-\.\|\:\'\"\/\s]+)\s?\}/g)
 
     , filters = (function(){
+        function str2date(str){
+            var dt = str.split(" ");
+            var date = dt[0].split('-');
+            var time = dt[1].split(':');
+            return new Date(data[0], date[1], date[2], time[0], time[1], parseInt(time[2]))
+        }
+
         return {
             'default': function(a,b){ return !a ? b : a },
             'upper': function(a){ return ("" + a).toUpperCase() },
@@ -590,7 +597,7 @@ var xUI = (function(){
                 return s.join(' ')
             },
             // filtro para fechas
-            'toLocalDate': function ( str ) { return new Date(str).toLocaleDateString() },
+            'toLocalDate': function ( str ) { return str2date(str).toLocaleDateString() },
             'getDateDayName': function ( str ) { return ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"][new Date(str).getDay()] },
             'getDateDay': function ( str ) { 
                 var d = new Date(str).getDate();
