@@ -598,27 +598,27 @@ var xUI = (function(){
             },
             // filtro para fechas
             'toLocalDate': function ( str ) { return str2date(str).toLocaleDateString() },
-            'getDateDayName': function ( str ) { return ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"][new Date(str).getDay()] },
+            'getDateDayName': function ( str ) { return ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"][str2date(str).getDay()] },
             'getDateDay': function ( str ) { 
-                var d = new Date(str).getDate();
+                var d = str2date(str).getDate();
                 if (d<10) { return ('0'+d.toString()) }
                 else { return d }
             },
             'getDateMonthName': function ( str ) { 
-                return ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"][new Date(str).getMonth()] 
+                return ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"][str2date(str).getMonth()] 
             },
-            'getDateMonth': function ( str ) { return new Date(str).getMonth() + 1 },
-            'getDateYear': function ( str ) { return new Date(str).getFullYear() },
+            'getDateMonth': function ( str ) { return str2date(str).getMonth() + 1 },
+            'getDateYear': function ( str ) { return str2date(str).getFullYear() },
             
             //filtros para horarios
-            'getTimeHours': function(str){ return new Date(str).getHours() },
+            'getTimeHours': function(str){ return str2date(str).getHours() },
             'getTimeMinutes': function(str){ 
-                var d = new Date(str).getMinutes();
+                var d = str2date(str).getMinutes();
                 if (d<10) { return ('0'+d.toString()) }
                 else { return d }
             },
             'getTimeSeconds': function(str){ 
-                var d = new Date(str).getSeconds();
+                var d = str2date(str).getSeconds();
                 if (d<10) { return ('0'+d.toString()) }
                 else { return d }
             },
@@ -749,7 +749,8 @@ var xUI = (function(){
         template: function(a){ return template(a) },
         context: function(a){ return context(a) },
         render: function(a){ return render(a) },
-        getVars: function(){ return template_vars() }
+        getVars: function(){ return template_vars() },
+        filters: function(){ return filters }
     }
 
 })();
