@@ -1024,14 +1024,14 @@ function paginate( data, page, paginate_by ) {
                         _b = new Date( b.split('/').reverse() );
                         if ( _a && _b ) { a = _a; b = _b; }
                     }
-                    catch (err) {
-                        _a = a.match(/[\d]+[,|\.]?[\d]*/);
-                        if ( _a ) { _a= Number(_a[0].replace(',','.')) };
-                        _b = b.match(/[\d]+[,|\.]?[\d]*/);
-                        if ( _a ) { _b= Number(_b[0].replace(',','.')) };
-                        if ( _a && ! isNaN(_a)) { a = _a; }
-                        if ( _b && ! isNaN(_b)) { b = _b; }
-                    }
+                    catch (err) { }
+                } else {
+                    _a = a.match(/[\d]+[,|\.]?[\d]*/);
+                    if ( _a ) { _a= Number(_a[0].replace(',','.')) };
+                    _b = b.match(/[\d]+[,|\.]?[\d]*/);
+                    if ( _a ) { _b= Number(_b[0].replace(',','.')) };
+                    if ( _a && ! isNaN(_a)) { a = _a; }
+                    if ( _b && ! isNaN(_b)) { b = _b; }
                 }
                 if ( asc ) { return  a < b ? 1 : -1; }
                 return  a > b ? 1 : -1; 
