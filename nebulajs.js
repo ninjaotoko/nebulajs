@@ -38,6 +38,12 @@
             , isObject : function ( object ) {
                 return object === Object( object ) && !Array.isArray( object )
             }
+            , isFunction : function ( obj ) { 
+                return Object.prototype.toString.call(obj) == '[object Function]' 
+            }
+            , isDate : function ( obj ) { 
+                return Object.prototype.toString.call(obj) == '[object Date]' 
+            }
             , keys : function ( object ) {
                 return Object.keys( object ) 
             }
@@ -575,6 +581,14 @@ var xUI = (function(){
     , var_exp = new RegExp(/\$\{\s?([a-zA-Z0-9\_\-\.\|\:\'\"\/\s]+)\s?\}/g)
 
     , filters = (function(){
+        function str2date(str){
+            if( $n.utils.isDate(str) ) return str;
+            var dt = str.split(" ");
+            var date = dt[0].split('-');
+            var time = dt[1].split(':');
+            return new Date(date[0], date[1], date[2], time[0], time[1], parseInt(time[2]))
+        }
+
         return {
             'default': function(a,b){ return !a ? b : a },
             'upper': function(a){ return ("" + a).toUpperCase() },
@@ -586,7 +600,33 @@ var xUI = (function(){
                 }
                 return s.join(' ')
             },
-            'toLocalDate': function ( str ) { return new Date(str).toLocaleDateString() },
+            // filtro para fechas
+            'toLocalDate': function ( str ) { return str2date(str).toLocaleDateString() },
+            'getDateDayName': function ( str ) { return ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"][str2date(str).getDay()] },
+            'getDateDay': function ( str ) { 
+                var d = str2date(str).getDate();
+                if (d<10) { return ('0'+d.toString()) }
+                else { return d }
+            },
+            'getDateMonthName': function ( str ) { 
+                return ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"][str2date(str).getMonth()] 
+            },
+            'getDateMonth': function ( str ) { return str2date(str).getMonth() + 1 },
+            'getDateYear': function ( str ) { return str2date(str).getFullYear() },
+            
+            //filtros para horarios
+            'getTimeHours': function(str){ return str2date(str).getHours() },
+            'getTimeMinutes': function(str){ 
+                var d = str2date(str).getMinutes();
+                if (d<10) { return ('0'+d.toString()) }
+                else { return d }
+            },
+            'getTimeSeconds': function(str){ 
+                var d = str2date(str).getSeconds();
+                if (d<10) { return ('0'+d.toString()) }
+                else { return d }
+            },
+
             'length': function ( obj ) { 
                 if ( obj != undefined ) { return obj.length } else { return 0 } 
             },
@@ -653,12 +693,23 @@ var xUI = (function(){
         return vars
     }
 
-    // Resuelve la recursividad de un objeto, retorna el objeto final o undefunid
+    // Resuelve la recursividad de un objeto, retorna el objeto final o undefined
     , resolve_obj = function ( obj, strobj ) {
         strobj = strobj.split(/\./);
         for ( var i = 0; i < strobj.length; i++ ) {
-            if ( obj.hasOwnProperty( strobj[i] ) ) {
-                obj = obj[strobj[i]]
+            if ( obj.hasOwnProperty( strobj[i] ) || obj[ strobj[i] ]) {
+                // identifica si es un metodo del objeto o una propiedad
+                if( $n.utils.isFunction( obj[ strobj[i] ] ) ){
+                    try{ 
+                        obj = obj[ strobj[i] ]( obj )
+                    }catch(E){
+                        try{ 
+                            obj = obj[ strobj[i] ]()
+                        }catch(E){}
+                    }
+                } else {
+                    obj = obj[strobj[i]]
+                }
             } else return undefined;
         }
         return obj
@@ -702,7 +753,8 @@ var xUI = (function(){
         template: function(a){ return template(a) },
         context: function(a){ return context(a) },
         render: function(a){ return render(a) },
-        getVars: function(){ return template_vars() }
+        getVars: function(){ return template_vars() },
+        filters: function(){ return filters }
     }
 
 })();
@@ -989,9 +1041,3 @@ function paginate( data, page, paginate_by ) {
         return this;
     };
 })(window.jQuery);
-
-
-// Carga underscore si no existe
-if ( !window._ ) {
-    asyncload( 'http://underscorejs.org/underscore-min.js' );
-}
