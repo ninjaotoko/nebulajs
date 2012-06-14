@@ -843,6 +843,10 @@ function paginate( data, page, paginate_by ) {
         return data.slice(from_item, to_item);
     }
 
+    function filter(selector, filter_class) {
+        data.find(selector).show();
+        if ( filter_class ) { data.find(selector).not(filter_class).hide(); }
+    }
     return {
         paginate_by : paginate_by, 
         pages : pages, 
@@ -855,7 +859,8 @@ function paginate( data, page, paginate_by ) {
         total_items: data.length,
         qs: data,
         goto_page: goto_page,
-        get_page: get_page
+        get_page: get_page,
+        filter: filter
     }
 
 }
