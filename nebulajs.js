@@ -1025,10 +1025,12 @@ function paginate( data, page, paginate_by ) {
                         if ( _a && _b ) { a = _a; b = _b; }
                     }
                     catch (err) {
-                        _a = Number(a.replace(',','.'));
-                        _b = Number(b.replace(',','.'));
-                        if ( ! isNaN(_a)) { a = _a; }
-                        if ( ! isNaN(_b)) { b = _b; }
+                        _a = a.match(/[\d]+[,|\.]?[\d]*/);
+                        if ( _a ) { _a= Number(_a.replace(',','.')) };
+                        _b = b.match(/[\d]+[,|\.]?[\d]*/);
+                        if ( _a ) { _b= Number(_b.replace(',','.')) };
+                        if ( _a && ! isNaN(_a)) { a = _a; }
+                        if ( _b && ! isNaN(_b)) { b = _b; }
                     }
                 }
                 if ( asc ) { return  a < b ? 1 : -1; }
