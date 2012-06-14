@@ -972,7 +972,12 @@ function paginate( data, page, paginate_by ) {
                         _b = new Date( b.split('/').reverse() );
                         if ( _a && _b ) { a = _a; b = _b; }
                     }
-                    catch (err) { /* do nothing */ }
+                    catch (err) {
+                        _a = Number(a.replace(',','.'));
+                        _b = Number(b.replace(',','.'));
+                        if ( ! isNaN(_a)) { a = _a; }
+                        if ( ! isNaN(_b)) { b = _b; }
+                    }
                 }
                 if ( asc ) { return  a < b ? 1 : -1; }
                 return  a > b ? 1 : -1; 
