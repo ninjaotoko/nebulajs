@@ -843,9 +843,9 @@ function paginate( data, page, paginate_by ) {
         return data.slice(from_item, to_item);
     }
 
-    function filter(selector, filter_class) {
+    function filter(selector, filter_class, parent_class) {
         data.find(selector).show();
-        if ( filter_class ) { data.find(selector).not(filter_class).hide(); }
+        if ( filter_class ) { data.find(selector).not(filter_class).parent(parent_class).hide(); }
     }
     return {
         paginate_by : paginate_by, 
