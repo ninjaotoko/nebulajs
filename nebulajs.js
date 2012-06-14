@@ -39,7 +39,10 @@
                 return object === Object( object ) && !Array.isArray( object )
             }
             , isFunction : function ( obj ) { 
-                return toString.call(obj) == '[object Function]' 
+                return Object.prototype.toString.call(obj) == '[object Function]' 
+            }
+            , isDate : function ( obj ) { 
+                return Object.prototype.toString.call(obj) == '[object Date]' 
             }
             , keys : function ( object ) {
                 return Object.keys( object ) 
@@ -579,7 +582,7 @@ var xUI = (function(){
 
     , filters = (function(){
         function str2date(str){
-            if(toString.call(str) == '[object Date]') return str;
+            if( $n.utils.isDate(str) ) return str;
             var dt = str.split(" ");
             var date = dt[0].split('-');
             var time = dt[1].split(':');
