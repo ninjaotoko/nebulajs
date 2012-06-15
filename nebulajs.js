@@ -814,7 +814,6 @@ function paginate( data, page, paginate_by ) {
     from_item = ( page - 1 ) * paginate_by;
     to_item = ( page * paginate_by );
 
-
     if (  pages <= 1 ) {
         $("#paginador").hide();
     }
@@ -847,9 +846,9 @@ function paginate( data, page, paginate_by ) {
     }
 
     function filter(selector, filter_class) {
-        var _data = data.filter(selector).show();
-        if ( filter_class ) { _data.filter(selector).not(filter_class).hide(); }
-        return paginate(_data, 1, paginate_by);
+        var _d = data.filter(selector).show();
+        if ( filter_class ) { _d.filter(selector).not(filter_class).hide(); }
+        return paginate(_d, 1, paginate_by);
     }
     return {
         paginate_by : paginate_by, 
