@@ -843,7 +843,7 @@ function paginate( data, page, paginate_by ) {
     }
 
     function get_page() {
-        return this.qs.filter(':visible').slice(from_item, to_item);
+        return _data.slice(from_item, to_item);
     }
 
     function filter(selector, filter_class) {
