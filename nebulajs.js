@@ -847,10 +847,9 @@ function paginate( data, page, paginate_by ) {
     }
 
     function filter(selector, filter_class) {
-        console.log(selector, filter_class);
-        data.find(selector).show();
-        if ( filter_class ) { data.find(selector).not(filter_class).hide(); }
-        return paginate(data, 1, paginate_by);
+        var _data = data.filter(selector).show();
+        if ( filter_class ) { _data.filter(selector).not(filter_class).hide(); }
+        return paginate(_data, 1, paginate_by);
     }
     return {
         paginate_by : paginate_by, 
