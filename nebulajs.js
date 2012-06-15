@@ -780,7 +780,7 @@ function paginate( data, page, paginate_by ) {
         url = /^(.*)\/page=\d+\/?$/gi.exec(window.location.hash) || /^(.*)\/$/gi.exec(window.location.hash) || /^(.*)$/gi.exec(window.location.hash);
     
     // resuelve la cantidad de páginas
-    try { _data = data.filter(':visible'); }
+    try { _data = data.filter('.visible'); }
     catch ( err ) { _data = data; }
     if ( _data.length > paginate_by ) {
         pages = Math.round ( _data.length / paginate_by );
@@ -846,8 +846,8 @@ function paginate( data, page, paginate_by ) {
     }
 
     function filter(selector, filter_class) {
-        var _d = data.filter(selector).show();
-        if ( filter_class ) { _d.filter(selector).not(filter_class).hide(); }
+        var _d = data.filter(selector).addClass('visible');
+        if ( filter_class ) { _d.filter(selector).not(filter_class).removeClass('visible'); }
         return paginate(_d, 1, paginate_by);
     }
     return {
