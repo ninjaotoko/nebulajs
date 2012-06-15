@@ -849,7 +849,7 @@ function paginate( data, page, paginate_by ) {
     function filter(selector, filter_class) {
         console.log(selector, filter_class);
         data.find(selector).show();
-        if ( filter_class ) { data.filter(selector).not(filter_class).hide(); }
+        if ( filter_class ) { data.find(selector).not(filter_class).hide(); }
         return paginate(data, 1, paginate_by);
     }
     return {
