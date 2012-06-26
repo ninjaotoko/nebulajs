@@ -774,16 +774,19 @@ function paginate( data, page, paginate_by ) {
         next = false,
         from_item,
         to_item,
+        _data,
         p,
         link = '', 
         url = /^(.*)\/page=\d+\/?$/gi.exec(window.location.hash) || /^(.*)\/$/gi.exec(window.location.hash) || /^(.*)$/gi.exec(window.location.hash);
     
     // resuelve la cantidad de páginas
-    if ( data.length > paginate_by ) {
-        pages = Math.round ( data.length / paginate_by );
-        last_page = data.length % paginate_by;
+    try { _data = data.filter(':not(.hidden)'); }
+    catch ( err ) { _data = data; }
+    if ( _data.length > paginate_by ) {
+        pages = Math.round ( _data.length / paginate_by );
+        last_page = _data.length % paginate_by;
 
-        pages = pages * paginate_by < data.length ? pages+1 : pages;
+        pages = pages * paginate_by < _data.length ? pages+1 : pages;
 
     }
 
@@ -810,7 +813,6 @@ function paginate( data, page, paginate_by ) {
 
     from_item = ( page - 1 ) * paginate_by;
     to_item = ( page * paginate_by );
-
 
     if (  pages <= 1 ) {
         $("#paginador").hide();
@@ -840,9 +842,14 @@ function paginate( data, page, paginate_by ) {
     }
 
     function get_page() {
-        return data.slice(from_item, to_item);
+        return _data.slice(from_item, to_item);
     }
 
+    function filter(selector, filter_class) {
+        var _d = data.filter(selector).removeClass('hidden');
+        if ( filter_class ) { _d.filter(selector).not(filter_class).addClass('hidden'); }
+        return paginate(_d, 1, paginate_by);
+    }
     return {
         paginate_by : paginate_by, 
         pages : pages, 
@@ -855,7 +862,8 @@ function paginate( data, page, paginate_by ) {
         total_items: data.length,
         qs: data,
         goto_page: goto_page,
-        get_page: get_page
+        get_page: get_page,
+        filter: filter
     }
 
 }
@@ -1024,7 +1032,14 @@ function paginate( data, page, paginate_by ) {
                         _b = new Date( b.split('/').reverse() );
                         if ( _a && _b ) { a = _a; b = _b; }
                     }
-                    catch (err) { /* do nothing */ }
+                    catch (err) { }
+                } else {
+                    _a = a.match(/[\d]+[,|\.]?[\d]*/);
+                    if ( _a ) { _a= Number(_a[0].replace(',','.')) };
+                    _b = b.match(/[\d]+[,|\.]?[\d]*/);
+                    if ( _a ) { _b= Number(_b[0].replace(',','.')) };
+                    if ( _a && ! isNaN(_a)) { a = _a; }
+                    if ( _b && ! isNaN(_b)) { b = _b; }
                 }
                 if ( asc ) { return  a < b ? 1 : -1; }
                 return  a > b ? 1 : -1; 
