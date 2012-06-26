@@ -1085,7 +1085,9 @@ function paginate( data, page, paginate_by ) {
             if(vid.hasClass("wimg96")){
                 vid.removeClass("wimg96").unwrap('a');
             }
-            vid.css({width:'auto'});
+            // ajusta el elemento al ancho automatico (del video)
+            el.css({width:'auto'});
+
 
             if(vid.attr('video_provider') == 'youtube' || vid.data('provider') == 'youtube'){
                 YOUTUBE_IFRAME[1] = vid.attr('media_id') || vid.data('id');
