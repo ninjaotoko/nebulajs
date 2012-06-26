@@ -681,7 +681,7 @@ var xUI = (function(){
         var match, object_var;
 
         while( match = var_exp.exec( template() ) ) {
-            if ( !vars.hasOwnProperty( match[1] ) ) {
+            if (!vars.hasOwnProperty(match[1])){
                 object_var = resolve_vars( match[1] )
                 /* log console.log(match[1], object_var); */
                 vars[ match[1] ] = object_var
@@ -1035,4 +1035,55 @@ function paginate( data, page, paginate_by ) {
         });
         return this;
     };
+})(window.jQuery);
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Plugin para render de videos 
+////////////////////////////////////////////////////////////////////////////////
+(function($){
+    var video_render_size = window.video_render_size || [400,300],
+    YOUTUBE_IFRAME = ["<iframe src=\"http://www.youtube.com/embed/",,
+        "?rel=0&amp;wmode=opaque\" width=\"",
+        video_render_size[0],
+        "\" height=\"",
+        video_render_size[1],
+        "\" frameborder=\"0\" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>"],
+    VIMEO_IFRAME = ["<iframe src=\"http://player.vimeo.com/video/",,
+        "?byline=0&amp;portrait=0&amp;wmode=opaque\" width=\"",
+        video_render_size[0],
+        "\" height=\"",
+        video_render_size[1],
+        "\" frameborder=\"0\" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>"];
+
+    $.fn.videoRender = function(){
+        var element = $(this);
+
+        $("[data-type='video']", element).on('click', function(event){
+            event.preventDefault();
+
+            var el = $(this),
+                vid = el.find("div.video_attach");
+
+            // mantiene la compatibilidad con la versión vieja
+            if(vid.hasClass("wimg96")){
+                vid.removeClass("wimg96").unwrap('a');
+            }
+
+            if(vid.attr('video_provider') == 'youtube' || vid.data('provider') == 'youtube'){
+                YOUTUBE_IFRAME[1] = vid.attr('media_id') || vid.data('id');
+                IFRAME = YOUTUBE_IFRAME.join('');
+            }
+
+            if(vid.attr('video_provider') == 'vimeo' || vid.data('provider')){
+                VIMEO_IFRAME[1] = vid.attr('media_id') || vid.data('id');
+                IFRAME = VIMEO_IFRAME.join('');
+            }
+
+            vid.html(IFRAME);
+            
+        });
+    
+    })
+
 })(window.jQuery);
