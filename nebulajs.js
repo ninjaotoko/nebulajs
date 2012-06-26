@@ -1097,8 +1097,7 @@ function paginate( data, page, paginate_by ) {
 
             vid.html(IFRAME);
             
-        });
-    
-    })
+        }); 
+    }
 
 })(window.jQuery);
