@@ -1077,6 +1077,7 @@ function paginate( data, page, paginate_by ) {
         $("[data-type='video']", element).on('click', function(event){
             event.preventDefault();
 
+
             var el = $(this),
                 vid = el.find("div.video_attach");
 
@@ -1084,6 +1085,7 @@ function paginate( data, page, paginate_by ) {
             if(vid.hasClass("wimg96")){
                 vid.removeClass("wimg96").unwrap('a');
             }
+            vid.css({width:'auto'});
 
             if(vid.attr('video_provider') == 'youtube' || vid.data('provider') == 'youtube'){
                 YOUTUBE_IFRAME[1] = vid.attr('media_id') || vid.data('id');
