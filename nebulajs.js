@@ -1057,13 +1057,15 @@ function paginate( data, page, paginate_by ) {
 // Plugin para render de videos 
 ////////////////////////////////////////////////////////////////////////////////
 (function($){
+
     var video_render_size = window.video_render_size || [400,300],
     YOUTUBE_IFRAME = ["<iframe src=\"http://www.youtube.com/embed/",,
         "?rel=0&amp;wmode=opaque\" width=\"",
         video_render_size[0],
         "\" height=\"",
         video_render_size[1],
-        "\" frameborder=\"0\" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>"],
+        "\" frameborder=\"0\" id=\"",,
+        "\" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>"],
     VIMEO_IFRAME = ["<iframe src=\"http://player.vimeo.com/video/",,
         "?byline=0&amp;portrait=0&amp;wmode=opaque\" width=\"",
         video_render_size[0],
@@ -1077,7 +1079,6 @@ function paginate( data, page, paginate_by ) {
         $("[data-type='video']", element).on('click', function(event){
             event.preventDefault();
 
-
             var el = $(this),
                 vid = el.find("div.video_attach");
 
@@ -1090,7 +1091,7 @@ function paginate( data, page, paginate_by ) {
 
 
             if(vid.attr('video_provider') == 'youtube' || vid.data('provider') == 'youtube'){
-                YOUTUBE_IFRAME[1] = vid.attr('media_id') || vid.data('id');
+                YOUTUBE_IFRAME[8] = YOUTUBE_IFRAME[1] = vid.attr('media_id') || vid.data('id');
                 IFRAME = YOUTUBE_IFRAME.join('');
             }
 
