@@ -1091,7 +1091,8 @@ function paginate( data, page, paginate_by ) {
 
 
             if(vid.attr('video_provider') == 'youtube' || vid.data('provider') == 'youtube'){
-                YOUTUBE_IFRAME[8] = YOUTUBE_IFRAME[1] = vid.attr('media_id') || vid.data('id');
+                YOUTUBE_IFRAME[1] = vid.attr('media_id') || vid.data('id');
+                YOUTUBE_IFRAME[8] = YOUTUBE_IFRAME[1];
                 IFRAME = YOUTUBE_IFRAME.join('');
             }
 
