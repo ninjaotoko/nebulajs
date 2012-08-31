@@ -19,10 +19,10 @@
 (function ( window, undefined ) {
 
     // Setea el objeto NebulaJS para que nadie mas lo use :)
-    var NebulaJS = {}
-    , document = window.document
-    , navigator = window.navigator
-    , location = window.location;
+    var NebulaJS = {},
+        document = window.document,
+        navigator = window.navigator,
+        location = window.location;
     
     (function () {
         var queuelist = {};
@@ -30,36 +30,35 @@
         // Utilidades (Obsoleto, esto va a ser reemplazado por underscore)
         var utils = {
             toType : function ( object ) { 
-                return ({}).toString.call( object ).match( /\s([a-zA-Z]+)/ )[1].toLowerCase()
-            }
-            , isArray : function ( object ) {
-                return Array.isArray( object )
-            }
-            , isObject : function ( object ) {
-                return object === Object( object ) && !Array.isArray( object )
-            }
-            , isFunction : function ( obj ) { 
-                return Object.prototype.toString.call(obj) == '[object Function]' 
-            }
-            , isDate : function ( obj ) { 
-                return Object.prototype.toString.call(obj) == '[object Date]' 
-            }
-            , keys : function ( object ) {
-                return Object.keys( object ) 
-            }
-            , trim : function ( str ) {
-                return str.replace( /^\s+|\s+$/g, "" )
-            }
-            , extend : function ( from, element ) {
+                return ({}).toString.call( object ).match( /\s([a-zA-Z]+)/ )[1].toLowerCase();
+            },
+            isArray : function ( object ) {
+                return Array.isArray( object );
+            },
+            isObject : function ( object ) {
+                return object === Object( object ) && !Array.isArray( object );
+            },
+            isFunction : function ( obj ) { 
+                return Object.prototype.toString.call(obj) == '[object Function]';
+            },
+            isDate : function ( obj ) { 
+                return Object.prototype.toString.call(obj) == '[object Date]';
+            },
+            keys : function ( object ) {
+                return Object.keys( object );
+            },
+            trim : function ( str ) {
+                return str.replace( /^\s+|\s+$/g, "" );
+            },
+            extend : function ( from, element ) {
                 var k, element = element || this;
-                for ( k in from ) element[k] = from[k];
-                return element
+                for ( k in from ) { element[k] = from[k]; }
+                return element;
+            },
+            args : function ( args ) {
+                return Array.prototype.slice.call( args, 1 );
             }
-            , args : function ( args ) {
-                return Array.prototype.slice.call( args, 1 )
-            } 
-        }
-
+        },
         ////////////////////////////////////////////////////////////////////////////////
         // Controlador de URLs y vistas, es la C de MVC
         // como usar:
@@ -76,52 +75,52 @@
         // 
         //
         ////////////////////////////////////////////////////////////////////////////////
-        , watchHash = function ( settings, callback ) {
-            var callback = utils.toType( callback ) == "function" ? callback : utils.toType( settings ) == "function" ? settings : function () {}
-            , config = utils.extend( utils.isObject( settings ) ? settings : {}, {
-                interval: 100,
-                hashstring: "#!/",
-                endslash: true,
-                debug: false
-            })
-            , hash
-            , current = ""
-            , action = ""
-            , def = false
-            , queue = {}
-            , i;
+        watchHash = function ( settings, callback ) {
+            var callback = utils.toType( callback ) == "function" ? callback : utils.toType( settings ) == "function" ? settings : function () {},
+                config = utils.extend( utils.isObject( settings ) ? settings : {}, {
+                    interval: 100,
+                    hashstring: "#!/",
+                    endslash: true,
+                    debug: false
+                }),
+                hash,
+                current = "",
+                action = "",
+                def = false,
+                queue = {},
+                i;
 
             // corrige las RegExp
             function regexp_sanitize( regex ) {
                 regex = utils.trim( regex );
                 regex = config.endslash && !/\/?\$?$/.test( regex ) ? regex + "/" : regex;
-                return regex
+                return regex;
             }
             // wrapper para el callback
             function wp_callback( hash, action ) {
-                return callback( hash, action )
+                return callback( hash, action );
             }
             // wrapper para las acciones
             function wp_action( fn ) {
                 var k;
                 if ( utils.isObject( fn ) && utils.toType( fn ) !== 'function' ) {
                     for ( k in fn ) { 
-                        Queue.setQueue( regexp_sanitize( k ), fn[k], queue )
+                        Queue.setQueue( regexp_sanitize( k ), fn[k], queue );
                     }
                 }
                 else {
-                    Queue.setQueue( "default", fn, queue )
+                    Queue.setQueue( "default", fn, queue );
                 }
             }
             // llama a la cola de fn
             function call_queue( actions, hash, action ) {
                 var k,i,m;
-                if ( !utils.isArray( actions ) ) { actions = [ actions ] }
+                if ( !utils.isArray( actions ) ) { actions = [ actions ]; }
                 for ( k in Queue.getQueue( queue ) ) {
                     for ( i = 0; i < actions.length; i++ ) {
-                        if ( m = ( new RegExp( k ) ).exec( actions[ i ] ) ) {
+                        if ( m == ( new RegExp( k ) ).exec( actions[ i ] ) ) {
                             m.slice( 1 ).unshift(  actions[ i ] );
-                            Queue.callQueue( k, m, queue )
+                            Queue.callQueue( k, m, queue );
                         }
                     }
                 }
@@ -133,7 +132,7 @@
                 // resetea la URL y agrega el hash
                 hash = window.location.hash;
                 if ( !hash ) { 
-                    window.location.hash = config.hashstring
+                    window.location.hash = config.hashstring;
                 }
 
                 // es un nuevo hash o sea el hash cambió
@@ -143,7 +142,7 @@
                     action = hash.split( config.hashstring )[1]; 
                     current = hash; // guarda el hash actual
                     // ejecula la cola de fn para este action, y la global
-                    call_queue( ["default", action], hash, action )
+                    call_queue( ["default", action], hash, action );
                     def = false;
 
                     // llama al callback
@@ -151,7 +150,7 @@
 
                 } else if ( hash.length && current !== hash && !def ) {
                     // ejecula la cola de fn para ésta acción y luego la global
-                    call_queue( ["default", "home"], hash, action )
+                    call_queue( ["default", "home"], hash, action );
                     def = true;
 
                     // llama al callback
@@ -161,57 +160,56 @@
             return {
                 action : function ( fn ) {
                     wp_action( fn );
-                    return this 
-                }
-                , start : function () {
+                    return this;
+                },
+                start : function () {
                     i = setInterval( wh, config.interval );
-                    return this
-                }
-                , stop : function () {
+                    return this;
+                },
+                stop : function () {
                     clearInterval( i );
-                    return this 
-                }
-                , restart : function () {
+                    return this;
+                },
+                restart : function () {
                     clearInterval( i );
                     i = setInterval( wh, config.interval );
-                    return this 
+                    return this;
                 }
-            }
-        }
+            };
+        };
 
         // Queue para aplicar fn en cola
         var Queue = (function () { 
             var setQueue = function ( names, fn, queue ) {
-                if ( !$n.utils.isArray( names ) ) { names = [ names ] }
-                if ( !$n.utils.isObject( queue ) ) { queue = Queue.queuelist }
+                if ( !$n.utils.isArray( names ) ) { names = [ names ]; }
+                if ( !$n.utils.isObject( queue ) ) { queue = Queue.queuelist; }
                 for ( var name = 0; name <= names.length - 1; name++ ) {
-                    if ( !queue[names[name]] ) { queue[names[name]] = {} }
+                    if ( !queue[names[name]] ) { queue[names[name]] = {}; }
                     if ( $n.utils.toType( fn ) == 'function' ) {
                         queue[names[name]][fn.name || ( Math.random() ).toString().replace( "0.", names[name]+"-fn-" )] = fn;
                     }
                 }
                 return queue[name];
-            }
-            , getQueue = function ( name, queue ) {
+            },
+            getQueue = function ( name, queue ) {
                 // resuelve si hay queue activa.
                 if ( !$n.utils.isObject( queue ) ) {
-                    if ( !$n.utils.isObject( name ) ) { queue = Queue.queuelist }
-                    else { queue = name }
+                    if ( !$n.utils.isObject( name ) ) { queue = Queue.queuelist; }
+                    else { queue = name; }
                 }
                 if ( !$n.utils.isArray( name ) && $n.utils.toType( name ) == 'srting') {
-                    return queue[ name ]
+                    return queue[ name ];
                 }
-
                 return queue;
-            }
-            , callQueue = function ( names, args, queue ) {
+            },
+            callQueue = function ( names, args, queue ) {
                 var name, q;
-                if ( !$n.utils.isArray( names ) ) { names = [ names ] }
+                if ( !$n.utils.isArray( names ) ) { names = [ names ]; }
                 if ( !$n.utils.isObject( queue ) ) { 
-                    queue = Queue.queuelist
+                    queue = Queue.queuelist;
                 }
                 for ( name = 0; name <= names.length - 1; name++ ) {
-                    for ( q in queue[names[name]] ) { queue[names[name]][q].apply( this, args ) }
+                    for ( q in queue[names[name]] ) { queue[names[name]][q].apply( this, args ); }
                 }
             };
             return {
@@ -219,24 +217,24 @@
                 getQueue: getQueue,
                 setQueue : setQueue,
                 callQueue : callQueue
-            }
+            };
         })();
 
         // UI es una mini librería para el manejo de templates
         var ui = (function () {
             var sorter = function ( a,b ) {
-                if ( a.toLowerCase() < b.toLowerCase() ) return -1;
-                if ( a.toLowerCase() > b.toLowerCase() ) return 1;
+                if ( a.toLowerCase() < b.toLowerCase() ) { return -1; }
+                if ( a.toLowerCase() > b.toLowerCase() ) { return 1; }
                 return 0;
-            }
-            , resolveAttr = function ( attr ) {
+            },
+            resolveAttr = function ( attr ) {
                 var args=[],k;
                 for ( k in attr ) {
                     args.push( k + "=\"" + ( $n.utils.toType( attr[k] ) == "object" ? resolveAttr( attr[k] ) : attr[k] ) + "\"" );
                 }
-                return args.join( " " )
-            }
-            , createTag = function ( tag, value, attr ) {
+                return args.join( " " );
+            },
+            createTag = function ( tag, value, attr ) {
                 // tag = strong
                 // attr = class, id, etc
                 // value = Esto es STRONG
@@ -247,22 +245,21 @@
 
                 value = $n.utils.toType( value ) == "object" ? "" : value || "";
 
-                if ( !tag&&!attr ) throw "createTag necesita de al menos 2 argumentos";
-                var norequired_end = /^img|hr|br|link$/i
-                , stag = $n.utils.trim( tag )
-                , st = "<"
-                , st_end = norequired_end.test( stag ) ? "" : ">"
-                , et = norequired_end.test( stag ) ? "" : "</"
-                , et_end = norequired_end.test( stag ) ? "/>" : ">"
-                , dt = attr ? " " : ""
-                , etag = norequired_end.test( stag ) ? "" : stag;
-
-                val = norequired_end.test( stag ) ? "" : value;
+                if ( !tag&&!attr ) { throw "createTag necesita de al menos 2 argumentos"; }
+                var norequired_end = /^img|hr|br|link$/i,
+                    stag = $n.utils.trim( tag ),
+                    st = "<",
+                    st_end = norequired_end.test( stag ) ? "" : ">",
+                    et = norequired_end.test( stag ) ? "" : "</",
+                    et_end = norequired_end.test( stag ) ? "/>" : ">",
+                    dt = attr ? " " : "",
+                    etag = norequired_end.test( stag ) ? "" : stag,
+                    val = norequired_end.test( stag ) ? "" : value;
 
                 return [st,stag,dt,attr,st_end,val,et,etag,et_end];
 
-            }
-            , list = function ( object, type, sort, reverse ) {
+            },
+            list = function ( object, type, sort, reverse ) {
                 type = type || "li";
                 sort = sort || false;
                 reverse = reverse || false;
@@ -276,13 +273,13 @@
                     t+=createTag( type, object[i] ).join( "" );
                 }
                 return t;
-            }
+            };
 
             return {
-                createTag:createTag
-                , list: list 
-                , olist: function ( object, sort, reverse ) { return list( object, "li", sort, reverse ) }
-            }
+                createTag:createTag,
+                list: list,
+                olist: function ( object, sort, reverse ) { return list( object, "li", sort, reverse ); }
+            };
         }());
 
         
@@ -331,7 +328,7 @@ var xargs = function(args, map){
     undefined = void(0);
 
     if (!args && !map) { 
-        throw "Los argumentos no son válidos.\nxargs(arguments, mapping) -> mapping arguments"
+        throw "Los argumentos no son válidos.\nxargs(arguments, mapping) -> mapping arguments";
     }
 
     var c, keys, kwargs={};
@@ -347,7 +344,7 @@ var xargs = function(args, map){
     }
 
     return kwargs;
-}
+};
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -355,7 +352,7 @@ var xargs = function(args, map){
 ////////////////////////////////////////////////////////////////////////////////
 var asyncload = function ( url_scripts ) {
     var i = 0, s, t = document.getElementsByTagName( 'script' )[0];
-    if( !$n.utils.isArray( url_scripts ) ) { url_scripts = [ url_scripts ] }
+    if( !$n.utils.isArray( url_scripts ) ) { url_scripts = [ url_scripts ]; }
     for ( i = 0; i < url_scripts.length; i++ ) {
         s = document.createElement( 'script' );
         s.src = url_scripts[i];
@@ -363,7 +360,7 @@ var asyncload = function ( url_scripts ) {
         s.async = true;
         t.parentNode.insertBefore( s, t );
     }
-}
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 // Slugify, utilidad para crear slugs
@@ -378,13 +375,13 @@ var slugify = function( str ) {
         val += map[ str.charCodeAt(i).toString(16) ] || "";
     }
     return val.toLowerCase();
-
-}
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 // Utils pata Notify
 ////////////////////////////////////////////////////////////////////////////////
 // ESTA FUNCION QUEDA FUERA DE USO Y ES REEMPLAZADA CON EL MODULO notify_request
+
 function evaluate_request(request) {
     var SUCCESS = 'success',
         INFO = 'info',
@@ -402,7 +399,6 @@ function evaluate_request(request) {
         return true;
     }
     if (request.status == 200) { // 200 ok
-
         // evalua data para encontrar 'error'
         request.done(function(data) {
             var e,typ,ti,co;
@@ -442,7 +438,6 @@ function evaluate_request(request) {
 // Compatible con Meta y Request de la API
 ////////////////////////////////////////////////////////////////////////////////
 var notify_request = (function(){
-
     var m = this,
         config = {
             delay_fail: 5000,
@@ -453,52 +448,51 @@ var notify_request = (function(){
         INFO = 'info',
         WARNING = 'warning',
         ERROR = 'error',
-    
-    evaluate = function (data, msg, request) {
-        console.log(data, msg, request)
-        // ERROR 500
-        if (request.status == 500 || data.status == 500) {
-            Notify.error('Error ;(', 'Algo ha fallado, intenta nuevamente!', config.delay_fail);
-        }
-        // ERROR 404
-        if (request.status == 404 || data.status == 404) {
-            Notify.warning('Cuidado :(', 'Al parecer eso no hace nada ¿?', config.delay_fail);
-        }
-        // ERROR 403
-        if (request.status == 403 || data.status == 403) {
-            Notify.warning('Cuidado :(', 'Al parecer eso no hace nada, recuerda logearte para usar el sistema.', config.delay_info);
-        }
-        // INFO 304
-        if (request.status == 304 || data.status == 304) {
-            Notify.info('Cargando :)', 'cargando bytes...', config.delay_info);
-            return true;
-        }
-        // 200 OK
-        if (request.status == 200 || data.status == 200) {
-            // evalua data para encontrar 'error'
-            // si request es NO es un objecto entonces data toma su lugar
-            if ( $n.utils.isObject(data) && !$n.utils.isObject(request) ) {
-                request = data
+        evaluate = function (data, msg, request) {
+            // ERROR 500
+            if (request.status == 500 || data.status == 500) {
+                Notify.error('Error ;(', 'Algo ha fallado, intenta nuevamente!', config.delay_fail);
             }
-            request.done(function(data) {
-                var e,typ,ti,co;
-                if ( data.meta && data.response && data.meta.status_type != SUCCESS ) {
-                    typ = data.meta.status_type;
-                    ti = data.meta.message;
+            // ERROR 404
+            if (request.status == 404 || data.status == 404) {
+                Notify.warning('Cuidado :(', 'Al parecer eso no hace nada ¿?', config.delay_fail);
+            }
+            // ERROR 403
+            if (request.status == 403 || data.status == 403) {
+                Notify.warning('Cuidado :(', 'Al parecer eso no hace nada, recuerda logearte para usar el sistema.', config.delay_info);
+            }
+            // INFO 304
+            if (request.status == 304 || data.status == 304) {
+                Notify.info('Cargando :)', 'cargando bytes...', config.delay_info);
+                return true;
+            }
+            // 200 OK
+            if (request.status == 200 || data.status == 200) {
+                // evalua data para encontrar 'error'
+                // si request es NO es un objecto entonces data toma su lugar
+                if ( $n.utils.isObject(data) && !$n.utils.isObject(request) ) {
+                    request = data;
+                }
+                request.done(function(data) {
+                    var e,typ,ti,co;
+                    if ( data.meta && data.response && data.meta.status_type != SUCCESS ) {
+                        typ = data.meta.status_type;
+                        ti = data.meta.message;
 
-                    Notify.render(typ, ti, co, config.delay_success);
-                    callback_fail(data, request);
-                    return false;
-                }
-                else {
-                    callback_done(data, request);
-                }
-            });
-            return true;
-        }
-    },
-    callback_fail = function ( ) { },
-    callback_done = function ( ) { };
+                        Notify.render(typ, ti, co, config.delay_success);
+                        callback_fail(data, request);
+                        return false;
+                    }
+                    else {
+                        callback_done(data, request);
+                        return;
+                    }
+                });
+                return true;
+            }
+        },
+        callback_fail = function ( ) { },
+        callback_done = function ( ) { };
 
     return {
         flag: {
@@ -507,11 +501,11 @@ var notify_request = (function(){
             WARNING: WARNING,
             ERROR: ERROR
         },
-        config: function ( args ) { $.extend(config, args); return this },
-        evaluate: function ( data, msg, request ) { evaluate( data, msg, request ); return this },
-        fail: function ( fn ) { callback_fail = fn; return this },
-        done: function ( fn ) { callback_done = fn; return this }
-    }
+        config: function ( args ) { $.extend(config, args); return this; },
+        evaluate: function ( data, msg, request ) { evaluate( data, msg, request ); return this; },
+        fail: function ( fn ) { callback_fail = fn; return this; },
+        done: function ( fn ) { callback_done = fn; return this; }
+    };
 
 })();
 
@@ -536,7 +530,7 @@ var Notify = (function() {
         }).delay(timeout).animate({
             top:-100
         }, function(){ 
-            cleartime(m, fn)
+            cleartime(m, fn);
         });
 
         $('body', top.document).append(m);
@@ -546,18 +540,18 @@ var Notify = (function() {
     cleartime = function(m, fn){ 
         $(m).remove();
         if(fn){
-            fn()
+            fn();
         }
     };
 
     return {
-        render: function(msgtype, title, msg, timeout, fn){ this.m = render(msgtype, title, msg, timeout, fn); return this },
-        error: function(title, msg, timeout, fn){ this.m = render('error', title, msg, timeout, fn); return this },
-        info: function(title, msg, timeout, fn){ this.m = render('info', title, msg, timeout, fn); return this },
-        warning: function(title, msg, timeout, fn){ this.m = render('warning', title, msg, timeout, fn); return this },
-        success: function(title, msg, timeout, fn){ this.m = render('success', title, msg, timeout, fn); return this },
-        clear: function(fn){ cleartime(this.m, fn); return this }
-    }
+        render: function(msgtype, title, msg, timeout, fn){ this.m = render(msgtype, title, msg, timeout, fn); return this; },
+        error: function(title, msg, timeout, fn){ this.m = render('error', title, msg, timeout, fn); return this; },
+        info: function(title, msg, timeout, fn){ this.m = render('info', title, msg, timeout, fn); return this; },
+        warning: function(title, msg, timeout, fn){ this.m = render('warning', title, msg, timeout, fn); return this; },
+        success: function(title, msg, timeout, fn){ this.m = render('success', title, msg, timeout, fn); return this; },
+        clear: function(fn){ cleartime(this.m, fn); return this; }
+    };
 }());
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -574,95 +568,86 @@ var Notify = (function() {
 //
 ////////////////////////////////////////////////////////////////////////////////
 var xUI = (function(){
-    var tpl
-    , vars = {}
-
+    var tpl,
+    vars = {},
     // regexp para identificar una variable de template con filtros y demas
-    , var_exp = new RegExp(/\$\{\s?([a-zA-Z0-9\_\-\.\|\:\'\"\/\s]+)\s?\}/g)
-
-    , filters = (function(){
+    var_exp = new RegExp(/\$\{\s?([a-zA-Z0-9\_\-\.\|\:\'\"\/\s]+)\s?\}/g),
+    filters = (function(){
         function str2date(str){
-            if( $n.utils.isDate(str) ) return str;
+            if( $n.utils.isDate(str) ) { return str; };
             var dt = str.split(" ");
             var date = dt[0].split('-');
             var time = dt[1].split(':');
-            return new Date(date[0], date[1], date[2], time[0], time[1], parseInt(time[2]))
+            return new Date(date[0], date[1], date[2], time[0], time[1], parseInt(time[2]));
         }
-
+        
         return {
-            'default': function(a,b){ return !a ? b : a },
-            'upper': function(a){ return ("" + a).toUpperCase() },
-            'lower': function(a){ return ("" + a).toLowerCase() },
+            'default': function(a,b){ return !a ? b : a; },
+            'upper': function(a){ return ("" + a).toUpperCase(); },
+            'lower': function(a){ return ("" + a).toLowerCase(); },
             'title': function(a){ 
                 var s = ("" + a).split(/\s/); 
                 for(var i=0; i<s.length; i++){ 
                     s[i] = s[i][0].toUpperCase() + s[i].slice(1);
                 }
-                return s.join(' ')
+                return s.join(' ');
             },
             // filtro para fechas
-            'toLocalDate': function ( str ) { return str2date(str).toLocaleDateString() },
-            'getDateDayName': function ( str ) { return ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"][str2date(str).getDay()] },
+            'toLocalDate': function ( str ) { return str2date(str).toLocaleDateString(); },
+            'getDateDayName': function ( str ) { return ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"][str2date(str).getDay()]; },
             'getDateDay': function ( str ) { 
                 var d = str2date(str).getDate();
-                if (d<10) { return ('0'+d.toString()) }
-                else { return d }
+                if (d<10) { return ('0'+d.toString()); }
+                else { return d; }
             },
             'getDateMonthName': function ( str ) { 
-                return ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"][str2date(str).getMonth()] 
+                return ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"][str2date(str).getMonth()]; 
             },
-            'getDateMonth': function ( str ) { return str2date(str).getMonth() + 1 },
-            'getDateYear': function ( str ) { return str2date(str).getFullYear() },
-            
+            'getDateMonth': function ( str ) { return str2date(str).getMonth() + 1; },
+            'getDateYear': function ( str ) { return str2date(str).getFullYear(); },
             //filtros para horarios
-            'getTimeHours': function(str){ return str2date(str).getHours() },
+            'getTimeHours': function(str){ return str2date(str).getHours(); },
             'getTimeMinutes': function(str){ 
                 var d = str2date(str).getMinutes();
-                if (d<10) { return ('0'+d.toString()) }
-                else { return d }
+                if (d<10) { return ('0'+d.toString()); }
+                else { return d; }
             },
             'getTimeSeconds': function(str){ 
                 var d = str2date(str).getSeconds();
-                if (d<10) { return ('0'+d.toString()) }
-                else { return d }
+                if (d<10) { return ('0'+d.toString()); }
+                else { return d; }
             },
 
             'length': function ( obj ) { 
-                if ( obj != undefined ) { return obj.length } else { return 0 } 
+                if ( obj != undefined ) { return obj.length; } else { return 0; } 
             },
-            'truncateWords': function ( str, len ) { return ("" + str).split(/\s/).slice(0, len).join(' ') }
-        }
-    }())
-
+            'truncateWords': function ( str, len ) { return ("" + str).split(/\s/).slice(0, len).join(' '); }
+        };
+    }()),
     // escape
-    , escape_slash = function(a){ return a.replace(/\|/g, '\\|').replace(/\:/g, '\\:') }
-
+    escape_slash = function(a){ return a.replace(/\|/g, '\\|').replace(/\:/g, '\\:'); },
     // setea o devuelve el template
-    , template = function(a){
+    template = function(a){
         if(a){ 
             tpl = a;
-            return xUI
+            return xUI;
         }
-        return tpl
-    }
-
+        return tpl;
+    },
     // crea el context de una variable pra luego parsear y devolver su valor
-    , context = function(a){
-        return new RegExp('\\$\{\\s\?'+a+'\\s\?\}', 'gi')
-    }
-
+    context = function(a){
+        return new RegExp('\\$\{\\s\?'+a+'\\s\?\}', 'gi');
+    },
     // render context. itera en la data y reemplaza en el template
-    , render = function ( data ) {
+    render = function ( data ) {
         if ( !$n.utils.isArray(data) ) {
             data = [data];
         }
         var n, result='';
         for ( n = 0; n < data.length; n++ ) {
-
             var i, var_ctx, ctx, _t = tpl;
             // carga/actualiza las variables del tempalte
             template_vars();
-
             // itera entre los keys del JSON
             for ( i in vars ) {
                 ctx = vars[i].get( data[n] );
@@ -672,51 +657,42 @@ var xUI = (function(){
             }
             result += _t;
         }
-
-        return result
-    }
-
+        return result;
+    },
     // obtener todas las vars del template
-    , template_vars = function () {
+    template_vars = function () {
         var match, object_var;
-
-        while( match = var_exp.exec( template() ) ) {
+        while( match == var_exp.exec( template() ) ) {
             if (!vars.hasOwnProperty(match[1])){
-                object_var = resolve_vars( match[1] )
-                /* log console.log(match[1], object_var); */
-                vars[ match[1] ] = object_var
+                object_var = resolve_vars( match[1] );
+                vars[ match[1] ] = object_var;
             } 
-            //else {
-            //   console.log('no se que hacer con esto?')
-            //}
         }
-        return vars
-    }
-
+        return vars;
+    },
     // Resuelve la recursividad de un objeto, retorna el objeto final o undefined
-    , resolve_obj = function ( obj, strobj ) {
+    resolve_obj = function ( obj, strobj ) {
         strobj = strobj.split(/\./);
         for ( var i = 0; i < strobj.length; i++ ) {
             if ( obj.hasOwnProperty( strobj[i] ) || obj[ strobj[i] ]) {
                 // identifica si es un metodo del objeto o una propiedad
                 if( $n.utils.isFunction( obj[ strobj[i] ] ) ){
                     try{ 
-                        obj = obj[ strobj[i] ]( obj )
+                        obj = obj[ strobj[i] ]( obj );
                     }catch(E){
                         try{ 
-                            obj = obj[ strobj[i] ]()
+                            obj = obj[ strobj[i] ]();
                         }catch(E){}
                     }
                 } else {
-                    obj = obj[strobj[i]]
+                    obj = obj[strobj[i]];
                 }
-            } else return undefined;
+            } else { return undefined; }
         }
-        return obj
-    }
-
+        return obj;
+    },
     // resuelve una variable con filtros, argumentos, etc
-    , resolve_vars = function(a){
+    resolve_vars = function(a){
         a = a.replace(/^\s+|\s+$/,'');
         var parts = /([\w\.]+)(?:\|?(\w+))?(?:\:?(.*))/gi.exec( a ).slice(1),
             obj = parts[0],
@@ -731,31 +707,29 @@ var xUI = (function(){
             get: function ( obj ) { 
                 // resuelve el contexto de la variable, desde el objeto a renderizar
                 // obj es algo como , user -> user.elemento.elemento.elemento....
-
-                obj = resolve_obj( obj, this.obj )
-
+                obj = resolve_obj( obj, this.obj );
                 /* log console.log( o ) */
                 if ( this.filter && filters[ this.filter ] ) {
                     if ( this.args ) {
-                        obj = filters[this.filter] ( obj, this.args )
+                        obj = filters[this.filter] ( obj, this.args );
                     }
                     else {
-                        obj = filters[this.filter] ( obj )
+                        obj = filters[this.filter] ( obj );
                     }
                 }
 
-                return obj
+                return obj;
             }
-        }
-    }
+        };
+    };
 
     return {
-        template: function(a){ return template(a) },
-        context: function(a){ return context(a) },
-        render: function(a){ return render(a) },
-        getVars: function(){ return template_vars() },
-        filters: function(){ return filters }
-    }
+        template: function(a){ return template(a); },
+        context: function(a){ return context(a); },
+        render: function(a){ return render(a); },
+        getVars: function(){ return template_vars(); },
+        filters: function(){ return filters; }
+    };
 
 })();
 
@@ -785,9 +759,7 @@ function paginate( data, page, paginate_by ) {
     if ( _data.length > paginate_by ) {
         pages = Math.round ( _data.length / paginate_by );
         last_page = _data.length % paginate_by;
-
         pages = pages * paginate_by < _data.length ? pages+1 : pages;
-
     }
 
     // no hay nada mas allá de la úlitma página, así que vuelve a la última.
@@ -824,11 +796,9 @@ function paginate( data, page, paginate_by ) {
         }
 
         $("#paginador").show();
-        $("#paginador ul").html(
-            "<li><a href=\"" + url[1] + "/page=" + (prev ? page - 1 : 1) + "\">←</a></li>" + 
+        $("#paginador ul").html( "<li><a href=\"" + url[1] + "/page=" + (prev ? page - 1 : 1) + "\">←</a></li>" + 
             link + 
-            "<li><a href=\"" + url[1] + "/page=" + (next ? page + 1 : page ) + "\">→</a></li>"
-        );
+            "<li><a href=\"" + url[1] + "/page=" + (next ? page + 1 : page ) + "\">→</a></li>" );
     }
 
     function goto_page(_page) {
@@ -864,11 +834,8 @@ function paginate( data, page, paginate_by ) {
         goto_page: goto_page,
         get_page: get_page,
         filter: filter
-    }
-
+    };
 }
-
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // jQuery - Protección automatica para formularios via ajax
@@ -912,7 +879,6 @@ function paginate( data, page, paginate_by ) {
     });
 })(window.jQuery);
 
-
 ////////////////////////////////////////////////////////////////////////////////
 // jQuery - util para serializar un form a JSON
 ////////////////////////////////////////////////////////////////////////////////
@@ -944,7 +910,7 @@ function paginate( data, page, paginate_by ) {
             },
             elements = this;
 
-        if (typeof options != 'function') {  $.extend(settings, options) }
+        if (typeof options != 'function') {  $.extend(settings, options); }
 
         function clean(element) {
             // limpia el form
@@ -955,9 +921,7 @@ function paginate( data, page, paginate_by ) {
 
         // recorre los elementos
         this.on("submit."+settings.namespace, function(event) {
-
             event.preventDefault();
-
             // simple cache
             var start_send = Date.now(),
                 element = $(this),
@@ -975,22 +939,22 @@ function paginate( data, page, paginate_by ) {
 
             promise.always(function(data, msg, request) {
                 if (settings.notify) { 
-                    try { info.clear() } catch ( E ) {}
+                    try { info.clear(); } catch ( E ) {}
                     $.when(evaluate_request(request)).then(function () { 
                         callback.apply(element, Array.prototype.slice.call([data,msg,request]));
-                        if (settings.cleanOnSuccess) { clean() }
+                        if (settings.cleanOnSuccess) { clean(); }
                     }).fail(function(){
                         callback.apply(element, Array.prototype.slice.call([data,msg,request]));
                     });
                 } 
-            }).fail(function(){ try { info.clear() } catch ( E ) {} });
+            }).fail(function(){ try { info.clear(); } catch ( E ) {} });
 
             if (!settings.notify) { 
-                try { info.clear() } catch ( E ) {}
+                try { info.clear(); } catch ( E ) {}
                 $.when(promise).then(function (data, msg, request) { 
-                    callback.apply(element, Array.prototype.slice.call([data,msg,request]))
+                    callback.apply(element, Array.prototype.slice.call([data,msg,request]));
                 }).fail(function (data, msg, request) { 
-                    callback.apply(element, Array.prototype.slice.call([data,msg,request]))
+                    callback.apply(element, Array.prototype.slice.call([data,msg,request]));
                 });
             }
 
@@ -1001,9 +965,9 @@ function paginate( data, page, paginate_by ) {
         });
 
         return {
-            clean: function () { clean(this.element) }
-        }
-    }
+            clean: function () { clean(this.element); }
+        };
+    };
 })(window.jQuery);
 
 //////////////////////////////////////////////////////////////////////////////// 
@@ -1014,36 +978,37 @@ function paginate( data, page, paginate_by ) {
 //////////////////////////////////////////////////////////////////////////////// 
 (function($){
     $.fn.DataGrid = function(config) {        
-        var table = this;
-        var config = config;
-        var pager = paginate($('tbody tr', table).clone(true), 1, config['paginate_by']);
+        var table = this,
+            pager = paginate($('tbody tr', table).clone(true), 1, config['paginate_by']);
+
         table.data('pager', pager);
         $('thead th .sort', table).click( function (ev) {
             ev.preventDefault();
-            var asc = $(this).data('ascending');
-            var field = $(this).attr('data-sort');
-            var l = pager.qs.sort( function (a,b ) { 
-                if ( $(a).hasClass('exsort') || $(b).hasClass('exsort') ) { return 0; }
-                var a = $('td.' + field , a).text().trim().toLowerCase();
-                var b = $('td.' + field , b).text().trim().toLowerCase();
-                if ( a.split('/').length == 3 && b.split('/').length ) { // Might be a date
-                    try {
-                        _a = new Date( a.split('/').reverse() );
-                        _b = new Date( b.split('/').reverse() );
-                        if ( _a && _b ) { a = _a; b = _b; }
+            var asc = $(this).data('ascending'),
+                field = $(this).attr('data-sort'),
+                l = pager.qs.sort( function (a,b ) { 
+                    if ( $(a).hasClass('exsort') || $(b).hasClass('exsort') ) { return 0; }
+                    var a = $('td.' + field , a).text().trim().toLowerCase();
+                    var b = $('td.' + field , b).text().trim().toLowerCase();
+                    if ( a.split('/').length == 3 && b.split('/').length ) { // Might be a date
+                        try {
+                            _a = new Date( a.split('/').reverse() );
+                            _b = new Date( b.split('/').reverse() );
+                            if ( _a && _b ) { a = _a; b = _b; }
+                        }
+                        catch (err) { }
+                    } else {
+                        _a = a.match(/[\d]+[,|\.]?[\d]*/);
+                        if ( _a ) { _a= Number(_a[0].replace(',','.')); } 
+                        _b = b.match(/[\d]+[,|\.]?[\d]*/);
+                        if ( _a ) { _b= Number(_b[0].replace(',','.')); }
+                        if ( _a && ! isNaN(_a)) { a = _a; }
+                        if ( _b && ! isNaN(_b)) { b = _b; }
                     }
-                    catch (err) { }
-                } else {
-                    _a = a.match(/[\d]+[,|\.]?[\d]*/);
-                    if ( _a ) { _a= Number(_a[0].replace(',','.')) };
-                    _b = b.match(/[\d]+[,|\.]?[\d]*/);
-                    if ( _a ) { _b= Number(_b[0].replace(',','.')) };
-                    if ( _a && ! isNaN(_a)) { a = _a; }
-                    if ( _b && ! isNaN(_b)) { b = _b; }
-                }
-                if ( asc ) { return  a < b ? 1 : -1; }
-                return  a > b ? 1 : -1; 
-            });
+                    if ( asc ) { return  a < b ? 1 : -1; }
+                    return  a > b ? 1 : -1; 
+                });
+            
             table.find('tbody').empty().append(l.slice(pager.from_item, pager.to_item).clone());
             if ( asc ) { $(this).data('ascending', false); }
             else { $(this).data('ascending', true); }
@@ -1078,32 +1043,24 @@ function paginate( data, page, paginate_by ) {
 
         $("[data-type='video']", element).on('click', function(event){
             event.preventDefault();
-
             var el = $(this),
                 vid = el.find("div.video_attach");
-
             // mantiene la compatibilidad con la versión vieja
             if(vid.hasClass("wimg96")){
                 vid.removeClass("wimg96").unwrap('a');
             }
             // ajusta el elemento al ancho automatico (del video)
             el.css({width:'auto'});
-
-
             if(vid.attr('video_provider') == 'youtube' || vid.data('provider') == 'youtube'){
                 YOUTUBE_IFRAME[1] = vid.attr('media_id') || vid.data('id');
                 YOUTUBE_IFRAME[7] = YOUTUBE_IFRAME[1];
                 IFRAME = YOUTUBE_IFRAME.join('');
             }
-
             if(vid.attr('video_provider') == 'vimeo' || vid.data('provider')){
                 VIMEO_IFRAME[1] = vid.attr('media_id') || vid.data('id');
                 IFRAME = VIMEO_IFRAME.join('');
             }
-
             vid.html(IFRAME);
-            
         }); 
-    }
-
+    };
 })(window.jQuery);
