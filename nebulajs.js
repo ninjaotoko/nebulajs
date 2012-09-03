@@ -662,7 +662,7 @@ var xUI = (function(){
     // obtener todas las vars del template
     template_vars = function () {
         var match, object_var;
-        while( match == var_exp.exec( template() ) ) {
+        while( match = var_exp.exec( template() ) ) {
             if (!vars.hasOwnProperty(match[1])){
                 object_var = resolve_vars( match[1] );
                 vars[ match[1] ] = object_var;
