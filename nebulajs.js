@@ -533,7 +533,7 @@ var Notify = (function() {
             cleartime(m, fn);
         });
 
-        $('body', top.document).append(m);
+        $('body', document).append(m);
         return m;
     },
 
