@@ -1,4 +1,4 @@
-.notify-message-bar .message {
+#notify-message-bar .message {
     -webkit-background-size: 40px 40px;
     -moz-background-size: 40px 40px;
     background-size: 40px 40px;
@@ -32,12 +32,12 @@
      z-index:1100;
 }
 
-.notify-message-bar .info { background-color: #4ea5cd; border-color: #3b8eb5; }
-.notify-message-bar .error { background-color: #de4343; border-color: #c43d3d; }
-.notify-message-bar .warning { background-color: #eaaf51; border-color: #d99a36; }
-.notify-message-bar .success { background-color: #61b832; border-color: #55a12c; }
-.notify-message-bar .message h3 { margin: 0 0 5px 0; color: #fff; }
-.notify-message-bar .message p { margin: 0; }
+#notify-message-bar .info { background-color: #4ea5cd; border-color: #3b8eb5; }
+#notify-message-bar .error { background-color: #de4343; border-color: #c43d3d; }
+#notify-message-bar .warning { background-color: #eaaf51; border-color: #d99a36; }
+#notify-message-bar .success { background-color: #61b832; border-color: #55a12c; }
+#notify-message-bar .message h3 { margin: 0 0 5px 0; color: #fff; }
+#notify-message-bar .message p { margin: 0; }
 
 @-webkit-keyframes animate-bg { from { background-position: 0 0; } to { background-position: -80px 0; } }
 @-moz-keyframes animate-bg { from { background-position: 0 0; } to { background-position: -80px 0; } }
